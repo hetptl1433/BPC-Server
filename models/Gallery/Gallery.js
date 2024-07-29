@@ -3,10 +3,15 @@ const { Schema, model } = require("mongoose");
 
 const GallerySchema = new mongoose.Schema(
   {
-    serialNumber: {
+    title: {
+      type: String,
+      required: true,
+      
+    },
+    sortOrder:{
       type: Number,
       required: true,
-      unique: true
+      default: 0
     },
     image: {
       type: String,

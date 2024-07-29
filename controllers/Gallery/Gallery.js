@@ -4,7 +4,7 @@ const { log } = require("console");
 
 exports.listImgages = async (req, res) => {
   try {
-    const list = await Gallery.find().sort({ serialNumber: 1 }).exec();
+    const list = await Gallery.find().sort({ sortOrder: 1 }).exec();
     res.json(list);
   } catch (error) {
     console.log(error);
@@ -22,10 +22,11 @@ exports.createImages = async (req, res) => {
       ? `uploads/GalleryImg/${req.file.filename}`
       : null;
 
-    let { serialNumber, IsActive } = req.body;
+    let { title, sortOrder, IsActive } = req.body;
 
     const add = await new Gallery({
-        serialNumber,
+        title,
+        sortOrder,
         image,
         IsActive,
     }).save();
@@ -50,7 +51,7 @@ exports.listImagesByParams = async (req, res) => {
         $match: {
           $or: [
             {
-              serialNumber: new RegExp(match, "i"),
+              title: new RegExp(match, "i"),
             },
             {
                 image: new RegExp(match, "i"),
@@ -139,7 +140,7 @@ exports.getImages  = async (req, res) => {
   }
 };
 
-exports.updateImages = async (req, res) => {
+exports.  updateImages = async (req, res) => {
   try {
     let image = req.file
       ? `uploads/GalleryImg/${req.file.filename}`

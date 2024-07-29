@@ -21,28 +21,28 @@ const multerStorage = multer.diskStorage({
 const upload = multer({ storage: multerStorage });
 
 router.post(
-  "/auth/create/galleryimg",
+  "/auth/create/GalleryImg",
   upload.single("myFile"),
   catchAsync(createImages)
 );
 
-router.get("/auth/list/galleryimg", catchAsync(listImgages));
+router.get("/auth/list/GalleryImg", catchAsync(listImgages));
 
 router.post(
-  "/auth/list-by-params/galleryimg",
+  "/auth/list-by-params/GalleryImg",
   catchAsync(listImagesByParams)
 );
 
-router.get("/auth/get/galleryimg/:_id", catchAsync(getImages));
+router.get("/auth/get/GalleryImg/:_id", catchAsync(getImages));
 
 router.put(
-  "/auth/update/galleryimg/:_id",
+  "/auth/update/GalleryImg/:_id",
   upload.single("myFile"),
   catchAsync(updateImages)
 );
 
 router.delete(
-  "/auth/remove/galleryimg/:_id",
+  "/auth/remove/GalleryImg/:_id",
   catchAsync(removeImages)
 );
 
