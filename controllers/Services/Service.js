@@ -162,3 +162,16 @@ exports.updateImages = async (req, res) => {
     res.status(500).send(err);
   }
 };
+
+exports.getServiceById = async (req, res) => {
+  try {
+    const serviceData = await service.findById(req.params.id).exec();
+    if (!serviceData) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+    res.json(serviceData);
+  } catch (error) {
+    console.error("Error fetching service by ID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
