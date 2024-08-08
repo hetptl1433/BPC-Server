@@ -1,0 +1,7 @@
+ listPointMaster,
+  createPointMaster,
+  removePointMaster,
+  updatePointMaster,
+  getPointMaster,
+  listPointMasterByParams,
+  listActivePointMaster,

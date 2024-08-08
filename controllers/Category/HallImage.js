@@ -1,49 +1,45 @@
+const HalleCategory = require("../../models/Category/HallImage");
 
-const EmailControl = require("../../models/Emailadd/EmailADD");
-
-exports.createEmailControl = async (req, res) => {
+exports.getHalleCategoryMaster = async (req, res) => {
   try {
-    console.log("Received request body:", req.body);
-    const { Title, Email, IsActive } = req.body;
-    const addEmailControl = await new EmailControl({ Title, Email,  IsActive }).save();
-    console.log("create EmailControl", addEmailControl);
-    res.status(200).json({ isOk: true, data: addEmailControl, message: "" });
-  } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating Email" });
-  }
-};
-
-exports.getEmailControl = async (req, res) => {
-  try {
-    const find = await EmailControl.findOne({ _id: req.params._id }).exec();
+    const find = await HalleCategory.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listEmailControl = async (req, res) => {
+exports.createHalleCategoryMaster = async (req, res) => {
   try {
-    const list = await EmailControl.find().sort({ createdAt: 1 }).exec();
+    const add = await new HalleCategory(req.body).save();
+    res.json(add);
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
+
+exports.listHalleCategoryMaster = async (req, res) => {
+  try {
+    const list = await HalleCategory.find({ IsActive: true }).sort({ categoryName : 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveEmailControl = async (req, res) => {
+exports.listHalleActiveCategories = async (req, res) => {
   try {
-    const list = await EmailControl.find({ IsActive: true })
+    const list = await HalleCategory.find({ IsActive: true })
       .sort({ createdAt: 1 })
       .exec();
-    console.log("list active EmailControl", list);
+    console.log("list avi", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listEmailControlByParams = async (req, res) => {
+exports.listHalleCategoryMasterByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -92,7 +88,7 @@ exports.listEmailControlByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Title: { $regex: match, $options: "i" },
+                categoryName: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -118,7 +114,7 @@ exports.listEmailControlByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await EmailControl.aggregate(query);
+    const list = await HalleCategory.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -126,9 +122,9 @@ exports.listEmailControlByParams = async (req, res) => {
   }
 };
 
-exports.updateEmailControlMaster = async (req, res) => {
+exports.updateHalleCategoryMaster = async (req, res) => {
   try {
-    const update = await EmailControl.findOneAndUpdate(
+    const update = await HalleCategory.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -139,9 +135,9 @@ exports.updateEmailControlMaster = async (req, res) => {
   }
 };
 
-exports.removeEmailControlMaster = async (req, res) => {
+exports.removeHalleCategoryMaster = async (req, res) => {
   try {
-    const delTL = await EmailControl.deleteOne({
+    const delTL = await HalleCategory.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

@@ -1,49 +1,45 @@
+const TestCategory = require("../../models/TestGroup/TestCat");
 
-const EmailControl = require("../../models/Emailadd/EmailADD");
-
-exports.createEmailControl = async (req, res) => {
+exports.getTestCategoryMaster = async (req, res) => {
   try {
-    console.log("Received request body:", req.body);
-    const { Title, Email, IsActive } = req.body;
-    const addEmailControl = await new EmailControl({ Title, Email,  IsActive }).save();
-    console.log("create EmailControl", addEmailControl);
-    res.status(200).json({ isOk: true, data: addEmailControl, message: "" });
-  } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating Email" });
-  }
-};
-
-exports.getEmailControl = async (req, res) => {
-  try {
-    const find = await EmailControl.findOne({ _id: req.params._id }).exec();
+    const find = await TestCategory.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listEmailControl = async (req, res) => {
+exports.createTestCategoryMaster = async (req, res) => {
   try {
-    const list = await EmailControl.find().sort({ createdAt: 1 }).exec();
+    const add = await new TestCategory(req.body).save();
+    res.json(add);
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+};
+
+exports.listTestCategoryMaster = async (req, res) => {
+  try {
+    const list = await TestCategory.find({ IsActive: true }).sort({ categoryName : 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveEmailControl = async (req, res) => {
+exports.listLEDActiveCategories = async (req, res) => {
   try {
-    const list = await EmailControl.find({ IsActive: true })
+    const list = await TestCategory.find({ IsActive: true })
       .sort({ createdAt: 1 })
       .exec();
-    console.log("list active EmailControl", list);
+    console.log("list avi", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listEmailControlByParams = async (req, res) => {
+exports.listTestCategoryMasterByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -92,7 +88,7 @@ exports.listEmailControlByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Title: { $regex: match, $options: "i" },
+                categoryName: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -118,7 +114,7 @@ exports.listEmailControlByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await EmailControl.aggregate(query);
+    const list = await TestCategory.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -126,9 +122,9 @@ exports.listEmailControlByParams = async (req, res) => {
   }
 };
 
-exports.updateEmailControlMaster = async (req, res) => {
+exports.updateTestCategoryMaster = async (req, res) => {
   try {
-    const update = await EmailControl.findOneAndUpdate(
+    const update = await TestCategory.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -139,9 +135,9 @@ exports.updateEmailControlMaster = async (req, res) => {
   }
 };
 
-exports.removeEmailControlMaster = async (req, res) => {
+exports.removeTestCategoryMaster = async (req, res) => {
   try {
-    const delTL = await EmailControl.deleteOne({
+    const delTL = await TestCategory.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

@@ -25,8 +25,24 @@ const {
   createCity,
   getCity,
   updateCity,
+
+ 
 } = require("../controllers/Location/Location");
+const{
+   listLocation,
+  createLocation,
+  listLocationByParams,
+  removeLocation,
+  getLocation,
+  updateLocation,
+  findLocation,
+}= require("../controllers/Location/CompanyLocation")
 const catchAsync = require("../utils/catchAsync");
+
+
+router.get("/auth/location/list-by-params/company-locations", catchAsync(listLocation));
+router.post("/auth/create/company-locations ", catchAsync(createLocation));
+
 
 //location setup ---> country
 router.get("/auth/location/country", catchAsync(listCountry));
