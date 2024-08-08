@@ -6,7 +6,6 @@ const PointMaster = require("../../models/PointMaster/PointMaster");
 exports.listPointMaster = async (req, res) => {
   try {
     const list = await PointMaster.find().sort({ PointMasterName: 1 }).exec();
-    console.log("list PointMaster", list);
     res.json(list);
   } catch (error) {
     console.log(error);
@@ -119,7 +118,6 @@ exports.listPointMasterByParams = async (req, res) => {
     }
 
     const list = await PointMaster.aggregate(query);
-    console.log("list PointMaster by params", list);
     res.json(list);
   } catch (error) {
     console.log(error);

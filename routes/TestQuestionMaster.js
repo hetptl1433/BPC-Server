@@ -20,7 +20,10 @@ const catchAsync = require("../utils/catchAsync");
 
 //location setup ---> TestQuestionMaster
 router.post ("/auth/location/TestQuestionMaster", catchAsync(listTestQuestionMaster));
-router.post("/auth/location/TestQuestionParam", catchAsync(listTestQuestionMasterByParams));
+router.post(
+  "/auth/location/TestQuestionParam",
+  catchAsync(listTestQuestionMasterByParams)
+);
 router.delete("/auth/location/TestQuestionMaster/:_id", catchAsync(removeTestQuestionMaster));
 router.get("/auth/location/TestQuestionMaster/:_id", catchAsync(getTestQuestionMaster));
 
