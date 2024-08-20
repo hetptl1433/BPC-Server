@@ -1,49 +1,53 @@
-const TestCatMaster = require("../../models/TestCatMaster/TextCatMaster");
+const CompanyProfile = require("../../models/CompanyProfile/CompanyProfile");
 const fs = require("fs");
 
-exports.getTestCatMasterDetails = async (req, res) => {
+exports.getCompanyProfileDetails = async (req, res) => {
   try {
-    const find = await TestCatMaster.findOne({ _id: req.params._id }).exec();
+    const find = await CompanyProfile.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.createTestCatMasterDetails = async (req, res) => {
+exports.createCompanyProfileDetails = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/TestCatMaster`)) {
-      fs.mkdirSync(`${__basedir}/uploads/TestCatMaster`);
+
+    console.log("ferwsfgew");
+    if (!fs.existsSync(`${__basedir}/uploads/CompanyProfile`)) {
+      fs.mkdirSync(`${__basedir}/uploads/CompanyProfile`);
     }
 
     let productImage = req.file
-      ? `uploads/TestCatMaster/${req.file.filename}`
+      ? `uploads/CompanyProfile/${req.file.filename}`
       : null;
 
     let {
-      category,
-      TestName,
-      TotalQues,
-      TotalTime,
-      IsHabit,
-      Desc,
-      HindiDesc,
-      GujDesc,
-      EngDesc,
+      CompanyName,
+      Email,
+      SalesEmail,
+      SupportEmail,
+      PartnerEmail,
+      Address,
+      PhoneOff1,
+      PhoneOff2,
+      MobileOne1,
+      MobileOne2,
       IsActive,
     } = req.body;
 
-    const add = await new TestCatMaster({
-      category,
+    const add = await new CompanyProfile({
+      CompanyName,
+      Email,
+      SalesEmail,
+      SupportEmail,
+      PartnerEmail,
+      Address,
+      PhoneOff1,
+      PhoneOff2,
+      MobileOne1,
+      MobileOne2,
       productImage,
-      TestName,
-      TotalQues,
-      TotalTime,
-      IsHabit,
-      Desc,
-      HindiDesc,
-      GujDesc,
-      EngDesc,
       IsActive,
     }).save();
     res.status(200).json({ isOk: true, data: add, message: "" });
@@ -53,34 +57,30 @@ exports.createTestCatMasterDetails = async (req, res) => {
   }
 };
 
-exports.listTestCatMasterDetails = async (req, res) => {
+exports.listCompanyProfileDetails = async (req, res) => {
   try {
-    const list = await TestCatMaster.find().sort({ TestName: 1 }).exec();
+    const list = await CompanyProfile.find().sort({ CompanyName: 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listTestCatMasterByCategory = async (req, res) => {
+exports.listCompanyProfileByCategory = async (req, res) => {
   try {
-    const list = await TestCatMaster.find({
-      category: req.params.categoryId,
-      IsActive: true,
-    })
-      .sort({ createdAt: -1 })
-      .exec();
-    if (list) {
-      res.status(200).json({ isOk: true, data: list, message: "" });
-    } else {
-      res.status(200).json({ isOk: false, message: "No data Found" });
+    try {
+      const list = await CompanyProfile.find().sort({ createdAt: -1 }).exec();
+      res.json(list);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listTestCatMasterDetailsByParams = async (req, res) => {
+exports.listCompanyProfileDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -88,45 +88,25 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
       {
         $match: { IsActive: IsActive },
       },
-      {
-        $lookup: {
-          from: "testcats", // Matches the collection name used for TestCat
-          localField: "category",
-          foreignField: "_id",
-          as: "category",
-        },
-      },
+    
       {
         $unwind: {
           path: "$category",
           preserveNullAndEmptyArrays: true,
         },
       },
-      {
-        $match: {
-          $or: [
-            {
-              TestName: { $regex: match, $options: "i" },
-            },
-            {
-              "category.categoryName": { $regex: match, $options: "i" },
-            },
-          ],
-        },
-      },
-      {
-        $sort:
-          sorton && sortdir
-            ? { [sorton]: sortdir == "desc" ? -1 : 1 }
-            : { createdAt: -1 },
-      },
+
+    
+
       {
         $facet: {
           stage1: [
             {
               $group: {
                 _id: null,
-                count: { $sum: 1 },
+                count: {
+                  $sum: 1,
+                },
               },
             },
           ],
@@ -152,8 +132,27 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
         },
       },
     ];
+   
 
-    const list = await TestCatMaster.aggregate(query);
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir == "desc" ? -1 : 1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    } else {
+      let sort = {};
+      sort["createdAt"] = -1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    }
+
+    const list = await CompanyProfile.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -161,18 +160,17 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
   }
 };
 
-
-exports.updateTestCatMasterDetails = async (req, res) => {
+exports.updateCompanyProfileDetails = async (req, res) => {
   try {
     let productImage = req.file
-      ? `uploads/TestCatMaster/${req.file.filename}`
+      ? `uploads/CompanyProfile/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
     if (productImage != null) {
       fieldvalues.productImage = productImage;
     }
 
-    const update = await TestCatMaster.findOneAndUpdate(
+    const update = await CompanyProfile.findOneAndUpdate(
       { _id: req.params._id },
       fieldvalues,
 
@@ -184,9 +182,9 @@ exports.updateTestCatMasterDetails = async (req, res) => {
   }
 };
 
-exports.removeTestCatMasterDetails = async (req, res) => {
+exports.removeCompanyProfileDetails = async (req, res) => {
   try {
-    const del = await TestCatMaster.deleteOne({
+    const del = await CompanyProfile.deleteOne({
       _id: req.params._id,
     });
     res.json(del);
@@ -199,7 +197,7 @@ exports.removeTestCatMasterDetails = async (req, res) => {
 //   try {
 //     const { option, categoryid } = req.params;
 
-//     const list = await TestCatMaster.find({
+//     const list = await CompanyProfile.find({
 //       category: categoryid,
 //       IsActive: true,
 //     })
@@ -221,12 +219,12 @@ exports.removeTestCatMasterDetails = async (req, res) => {
 //         break;
 //       case "4": // A to Z
 //         sortedList = list.sort((a, b) =>
-//           a.TestName.localeCompare(b.TestName)
+//           a.productName.localeCompare(b.productName)
 //         );
 //         break;
 //       case "5": // Z to A
 //         sortedList = list.sort((a, b) =>
-//           b.TestName.localeCompare(a.TestName)
+//           b.productName.localeCompare(a.productName)
 //         );
 //         break;
 //       default:

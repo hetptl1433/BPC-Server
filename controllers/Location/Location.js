@@ -104,7 +104,7 @@ exports.createCountry = async (req, res) => {
 
 exports.removeCountry = async (req, res) => {
   try {
-    const delCountry = await Country.findOneAndRemove({
+    const delCountry = await Country.findOneAndDelete({
       _id: req.params._id,
     });
     console.log(delCountry);
@@ -316,7 +316,7 @@ exports.createState = async (req, res) => {
 
 exports.removeState = async (req, res) => {
   try {
-    const del = await State.findOneAndRemove({
+    const del = await State.findOneAndDelete({
       _id: req.params._id,
     });
     console.log(del);
@@ -509,7 +509,7 @@ exports.listCityByParams = async (req, res) => {
 
 exports.removeCity = async (req, res) => {
   try {
-    const del = await City.findOneAndRemove({
+    const del = await City.findOneAndDelete({
       _id: req.params._id,
     });
     console.log(del);

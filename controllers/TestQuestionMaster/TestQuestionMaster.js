@@ -20,112 +20,83 @@ exports.listTestQuestionMasterByParams = async (req, res) => {
 
     let query = [
       {
-        $match: { isActive: isActive },
+        $match: { isActive },
       },
+      // Lookup for TestCategoryID to get categoryName
       {
         $lookup: {
-          from: "testcats", // Collection name for TestCat
+          from: "testcats", // Name of the collection for TestCat
           localField: "TestCategoryID",
           foreignField: "_id",
-          as: "categoryDetails",
+          as: "TestCategoryDetails",
         },
       },
       {
-        $unwind: {
-          path: "$categoryDetails",
-          preserveNullAndEmptyArrays: true,
+        $unwind: "$TestCategoryDetails",
+      },
+      {
+        $addFields: {
+          categoryName: "$TestCategoryDetails.categoryName",
         },
       },
+      // Lookup for TestMasterID to get category
       {
         $lookup: {
-          from: "testcatmasters", // Collection name for TestCatMaster
+          from: "testcatmasters", // Name of the collection for TestCatMaster
           localField: "TestMasterID",
           foreignField: "_id",
-          as: "TestNameDetails",
+          as: "TestMasterDetails",
         },
       },
       {
-        $unwind: {
-          path: "$TestNameDetails",
-          preserveNullAndEmptyArrays: true,
-        },
+        $unwind: "$TestMasterDetails",
       },
       {
-        $match: {
-          $or: [
-            {
-              TestQuestionMasterName: new RegExp(match, "i"),
-            },
-            {
-              "TestNameDetails.TestName": new RegExp(match, "i"),
-            },
-            {
-              "categoryDetails.categoryName": new RegExp(match, "i"),
-            },
-          ],
-        },
-      },
-      {
-        $facet: {
-          stage1: [
-            {
-              $group: {
-                _id: null,
-                count: {
-                  $sum: 1,
-                },
-              },
-            },
-          ],
-          stage2: [
-            {
-              $skip: skip,
-            },
-            {
-              $limit: per_page,
-            },
-          ],
-        },
-      },
-      {
-        $unwind: {
-          path: "$stage1",
-        },
-      },
-      {
-        $project: {
-          count: "$stage1.count",
-          data: "$stage2",
+        $addFields: {
+          category: "$TestMasterDetails.category",
         },
       },
     ];
 
-    if (sorton && sortdir) {
-      let sort = {};
-      sort[sorton] = sortdir == "desc" ? -1 : 1;
-      query = [
-        {
-          $sort: sort,
+    if (match) {
+      const regex = new RegExp(match, "i");
+      query.push({
+        $match: {
+          $or: [{ AnsType: regex }],
         },
-      ].concat(query);
-    } else {
-      let sort = {};
-      sort["createdAt"] = -1;
-      query = [
-        {
-          $sort: sort,
-        },
-      ].concat(query);
+      });
     }
 
+    let sort = {};
+    if (sorton && sortdir) {
+      sort[sorton] = sortdir === "desc" ? -1 : 1;
+    } else {
+      sort.createdAt = -1;
+    }
+    query.push({ $sort: sort });
+
+    query.push({
+      $facet: {
+        stage1: [{ $count: "count" }],
+        stage2: [{ $skip: skip }, { $limit: per_page }],
+      },
+    });
+    query.push({ $unwind: "$stage1" });
+    query.push({
+      $project: {
+        count: "$stage1.count",
+        data: "$stage2",
+      },
+    });
+
     const list = await TestQuestionMaster.aggregate(query);
-    console.log("list TestQuestionMaster by params", list);
     res.json(list);
   } catch (error) {
-    console.log(error);
-    res.status(400).send("list all TestQuestionMaster failed");
+    console.log("error in list all TestQuestionMaster", error);
+    res.status(400).send("list TestQuestionMaster failed");
   }
 };
+
 
 
 exports.removeTestQuestionMaster = async (req, res) => {
@@ -157,13 +128,7 @@ exports.createTestQuestionMaster = async (req, res) => {
     console.log(req.body);
     // const code = await TestQuestionMaster.findOne({ TestQuestionMasterCode: req.body.TestQuestionMasterCode });
     const TestQuestionMasterName = await TestQuestionMaster.findOne({ TestQuestionMasterName: req.body.TestQuestionMasterName });
-    if (TestQuestionMasterName) {
-      return res.status(200).json({
-        isOk: false,
-        field: 1,
-        message: "TestQuestionMaster with this name already exists!",
-      });
-    }
+   
     // else if (code) {
     //   return res
     //     .status(200)
@@ -173,11 +138,11 @@ exports.createTestQuestionMaster = async (req, res) => {
     //       message: "TestQuestionMaster with this code already exists!",
     //     });
     // }
-    else {
+ 
       const addTestQuestionMaster = await new TestQuestionMaster(req.body).save();
       console.log("create TestQuestionMaster", addTestQuestionMaster);
       res.status(200).json({ isOk: true, data: addTestQuestionMaster });
-    }
+    
   } catch (err) {
     console.log("log error from create TestQuestionMaster", err);
     return res.status(400).send("create dynamic content failed");

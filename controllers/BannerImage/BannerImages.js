@@ -1,4 +1,4 @@
-const BannerImages = require("../../models/CMS/BannerImages");
+const BannerImages = require("../../models/BannerImage/BannerImages");
 const fs = require("fs");
 
 exports.listBannerImages = async (req, res) => {
@@ -13,20 +13,19 @@ exports.listBannerImages = async (req, res) => {
 
 exports.createBannerImages = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/BannerImg`)) {
-      fs.mkdirSync(`${__basedir}/uploads/BannerImg`);
+    if (!fs.existsSync(`${__basedir}/uploads/BannerImage`)) {
+      fs.mkdirSync(`${__basedir}/uploads/BannerImage`);
     }
 
     let bannerImage = req.file
-      ? `uploads/BannerImg/${req.file.filename}`
+      ? `uploads/BannerImage/${req.file.filename}`
       : null;
 
-    let { Title, keyWord, Description, IsActive } = req.body;
+    let { Title, Text, IsActive } = req.body;
 
     const add = await new BannerImages({
       Title,
-      keyWord,
-      Description,
+      Text,
       bannerImage,
       IsActive,
     }).save();
@@ -53,12 +52,10 @@ exports.listBannerImagesByParams = async (req, res) => {
               Title: new RegExp(match, "i"),
             },
             {
-              keyWord: new RegExp(match, "i"),
+              Text: new RegExp(match, "i"),
             },
 
-            {
-              Description: new RegExp(match, "i"),
-            },
+          
           ],
         },
       },
@@ -145,7 +142,7 @@ exports.getBannerImages = async (req, res) => {
 exports.updateBannerImages = async (req, res) => {
   try {
     let bannerImage = req.file
-      ? `uploads/BannerImg/${req.file.filename}`
+      ? `uploads/BannerImage/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
     if (bannerImage != null) {

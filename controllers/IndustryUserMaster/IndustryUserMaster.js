@@ -1,49 +1,48 @@
-const TestCatMaster = require("../../models/TestCatMaster/TextCatMaster");
+const IndustryUserMaster = require("../../models/IndustryUserMaster/IndustryUserMaster");
 const fs = require("fs");
 
-exports.getTestCatMasterDetails = async (req, res) => {
+exports.getIndustryUserMasterDetails = async (req, res) => {
   try {
-    const find = await TestCatMaster.findOne({ _id: req.params._id }).exec();
+    const find = await IndustryUserMaster.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.createTestCatMasterDetails = async (req, res) => {
+exports.createIndustryUserMasterDetails = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/TestCatMaster`)) {
-      fs.mkdirSync(`${__basedir}/uploads/TestCatMaster`);
+    if (!fs.existsSync(`${__basedir}/uploads/IndustryUserMaster`)) {
+      fs.mkdirSync(`${__basedir}/uploads/IndustryUserMaster`);
     }
 
     let productImage = req.file
-      ? `uploads/TestCatMaster/${req.file.filename}`
+      ? `uploads/IndustryUserMaster/${req.file.filename}`
       : null;
+let {
+  UserGroupCategory,
+  IndustryCategory,
+  Name,
+  Email,
+  Mobile,
+  landLine,
+  UserName,
+  Password,
+  Address,
+  IsActive
+} = req.body;
 
-    let {
-      category,
-      TestName,
-      TotalQues,
-      TotalTime,
-      IsHabit,
-      Desc,
-      HindiDesc,
-      GujDesc,
-      EngDesc,
-      IsActive,
-    } = req.body;
 
-    const add = await new TestCatMaster({
-      category,
-      productImage,
-      TestName,
-      TotalQues,
-      TotalTime,
-      IsHabit,
-      Desc,
-      HindiDesc,
-      GujDesc,
-      EngDesc,
+    const add = await new IndustryUserMaster({
+      UserGroupCategory,
+      IndustryCategory,
+      Name,
+      Email,
+      Mobile,
+      landLine,
+      UserName,
+      Password,
+      Address,
       IsActive,
     }).save();
     res.status(200).json({ isOk: true, data: add, message: "" });
@@ -53,19 +52,19 @@ exports.createTestCatMasterDetails = async (req, res) => {
   }
 };
 
-exports.listTestCatMasterDetails = async (req, res) => {
+exports.listIndustryUserMasterDetails = async (req, res) => {
   try {
-    const list = await TestCatMaster.find().sort({ TestName: 1 }).exec();
+    const list = await IndustryUserMaster.find().sort({ Name: 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listTestCatMasterByCategory = async (req, res) => {
+exports.listIndustryUserMasterByCategory = async (req, res) => {
   try {
-    const list = await TestCatMaster.find({
-      category: req.params.categoryId,
+    const list = await IndustryUserMaster.find({
+      UserGroupCategory: req.params.UserGroupCategoryId,
       IsActive: true,
     })
       .sort({ createdAt: -1 })
@@ -79,9 +78,9 @@ exports.listTestCatMasterByCategory = async (req, res) => {
     return res.status(400).send(error);
   }
 };
-
-exports.listTestCatMasterDetailsByParams = async (req, res) => {
+exports.listIndustryUserMasterDetailsByParams = async (req, res) => {
   try {
+    console.log("ayo ai");
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
     let query = [
@@ -90,35 +89,19 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
       },
       {
         $lookup: {
-          from: "testcats", // Matches the collection name used for TestCat
-          localField: "category",
-          foreignField: "_id",
-          as: "category",
+          from: "industries", // The collection name of IndustryCategory
+          localField: "IndustryCategory", // The field in IndustryUserMaster that references IndustryCategory
+          foreignField: "_id", // The field in IndustryCategory that is matched against
+          as: "Indus", // The alias for the joined data
         },
       },
       {
-        $unwind: {
-          path: "$category",
-          preserveNullAndEmptyArrays: true,
+        $lookup: {
+          from: "usergroupmasters", // The collection name of UserGroupCategory
+          localField: "UserGroupCategory", // The field in IndustryUserMaster that references UserGroupCategory
+          foreignField: "_id", // The field in UserGroupCategory that is matched against
+          as: "usegr", // The alias for the joined data
         },
-      },
-      {
-        $match: {
-          $or: [
-            {
-              TestName: { $regex: match, $options: "i" },
-            },
-            {
-              "category.categoryName": { $regex: match, $options: "i" },
-            },
-          ],
-        },
-      },
-      {
-        $sort:
-          sorton && sortdir
-            ? { [sorton]: sortdir == "desc" ? -1 : 1 }
-            : { createdAt: -1 },
       },
       {
         $facet: {
@@ -126,7 +109,9 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
             {
               $group: {
                 _id: null,
-                count: { $sum: 1 },
+                count: {
+                  $sum: 1,
+                },
               },
             },
           ],
@@ -153,7 +138,25 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
       },
     ];
 
-    const list = await TestCatMaster.aggregate(query);
+    if (sorton && sortdir) {
+      let sort = {};
+      sort[sorton] = sortdir === "desc" ? -1 : 1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    } else {
+      let sort = {};
+      sort["createdAt"] = -1;
+      query = [
+        {
+          $sort: sort,
+        },
+      ].concat(query);
+    }
+
+    const list = await IndustryUserMaster.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -162,17 +165,17 @@ exports.listTestCatMasterDetailsByParams = async (req, res) => {
 };
 
 
-exports.updateTestCatMasterDetails = async (req, res) => {
+exports.updateIndustryUserMasterDetails = async (req, res) => {
   try {
     let productImage = req.file
-      ? `uploads/TestCatMaster/${req.file.filename}`
+      ? `uploads/IndustryUserMaster/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
     if (productImage != null) {
       fieldvalues.productImage = productImage;
     }
 
-    const update = await TestCatMaster.findOneAndUpdate(
+    const update = await IndustryUserMaster.findOneAndUpdate(
       { _id: req.params._id },
       fieldvalues,
 
@@ -184,9 +187,9 @@ exports.updateTestCatMasterDetails = async (req, res) => {
   }
 };
 
-exports.removeTestCatMasterDetails = async (req, res) => {
+exports.removeIndustryUserMasterDetails = async (req, res) => {
   try {
-    const del = await TestCatMaster.deleteOne({
+    const del = await IndustryUserMaster.deleteOne({
       _id: req.params._id,
     });
     res.json(del);
@@ -199,7 +202,7 @@ exports.removeTestCatMasterDetails = async (req, res) => {
 //   try {
 //     const { option, categoryid } = req.params;
 
-//     const list = await TestCatMaster.find({
+//     const list = await IndustryUserMaster.find({
 //       category: categoryid,
 //       IsActive: true,
 //     })
@@ -221,12 +224,12 @@ exports.removeTestCatMasterDetails = async (req, res) => {
 //         break;
 //       case "4": // A to Z
 //         sortedList = list.sort((a, b) =>
-//           a.TestName.localeCompare(b.TestName)
+//           a.productName.localeCompare(b.productName)
 //         );
 //         break;
 //       case "5": // Z to A
 //         sortedList = list.sort((a, b) =>
-//           b.TestName.localeCompare(a.TestName)
+//           b.productName.localeCompare(a.productName)
 //         );
 //         break;
 //       default:

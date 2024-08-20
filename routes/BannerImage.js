@@ -11,12 +11,12 @@ const {
   getBannerImages,
   updateBannerImages,
   removeBannerImages,
-} = require("../controllers/CMS/BannerImages");
+} = require("../controllers/BannerImage/BannerImages");
 const multer = require("multer");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/BannerImg");
+    cb(null, "uploads/BannerImage");
   },
   filename: (req, file, cb) => {
     // const ext = file.mimetype.split("/")[1];
@@ -28,28 +28,28 @@ const multerStorage = multer.diskStorage({
 const upload = multer({ storage: multerStorage });
 
 router.post(
-  "/auth/create/banner-images",
+  "/auth/create/banner-images1",
   upload.single("myFile"),
   catchAsync(createBannerImages)
 );
 
-router.get("/auth/list/banner-images", catchAsync(listBannerImages));
+router.get("/auth/list/banner-images1", catchAsync(listBannerImages));
 
 router.post(
-  "/auth/list-by-params/banner-images",
+  "/auth/list-by-params/banner-images1",
   catchAsync(listBannerImagesByParams)
 );
 
-router.get("/auth/get/banner-images/:_id", catchAsync(getBannerImages));
+router.get("/auth/get/banner-images1/:_id", catchAsync(getBannerImages));
 
 router.put(
-  "/auth/update/banner-images/:_id",
+  "/auth/update/banner-images1/:_id",
   upload.single("myFile"),
   catchAsync(updateBannerImages)
 );
 
 router.delete(
-  "/auth/remove/banner-images/:_id",
+  "/auth/remove/banner-images1/:_id",
   catchAsync(removeBannerImages)
 );
 

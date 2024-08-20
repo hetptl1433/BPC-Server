@@ -1,9 +1,9 @@
-const BannerImages = require("../../models/CMS/BannerImages");
+const MediaFiles = require("../../models/Media/Media");
 const fs = require("fs");
 
-exports.listBannerImages = async (req, res) => {
+exports.listMediaFiles = async (req, res) => {
   try {
-    const list = await BannerImages.find().sort({ createdAt: -1 }).exec();
+    const list = await MediaFiles.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     console.log(error);
@@ -11,23 +11,22 @@ exports.listBannerImages = async (req, res) => {
   }
 };
 
-exports.createBannerImages = async (req, res) => {
+exports.createMediaFiles = async (req, res) => {
   try {
-    if (!fs.existsSync(`${__basedir}/uploads/BannerImg`)) {
-      fs.mkdirSync(`${__basedir}/uploads/BannerImg`);
+    if (!fs.existsSync(`${__basedir}/uploads/MediaFile`)) {
+      fs.mkdirSync(`${__basedir}/uploads/MediaFile`);
     }
 
-    let bannerImage = req.file
-      ? `uploads/BannerImg/${req.file.filename}`
+    let MediaFile = req.file
+      ? `uploads/MediaFile/${req.file.filename}`
       : null;
 
-    let { Title, keyWord, Description, IsActive } = req.body;
+    let { Title, IsActive } = req.body;
 
-    const add = await new BannerImages({
+    const add = await new MediaFiles({
       Title,
-      keyWord,
-      Description,
-      bannerImage,
+      
+      MediaFile,
       IsActive,
     }).save();
     res.status(200).json({ isOk: true, data: add, message: "" });
@@ -37,7 +36,7 @@ exports.createBannerImages = async (req, res) => {
   }
 };
 
-exports.listBannerImagesByParams = async (req, res) => {
+exports.listMediaFilesByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -52,13 +51,9 @@ exports.listBannerImagesByParams = async (req, res) => {
             {
               Title: new RegExp(match, "i"),
             },
-            {
-              keyWord: new RegExp(match, "i"),
-            },
+          
 
-            {
-              Description: new RegExp(match, "i"),
-            },
+          
           ],
         },
       },
@@ -114,16 +109,16 @@ exports.listBannerImagesByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await BannerImages.aggregate(query);
+    const list = await MediaFiles.aggregate(query);
     res.json(list);
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-exports.removeBannerImages = async (req, res) => {
+exports.removeMediaFiles = async (req, res) => {
   try {
-    const del = await BannerImages.findOneAndDelete({
+    const del = await MediaFiles.findOneAndDelete({
       _id: req.params._id,
     });
     res.json(del);
@@ -133,25 +128,25 @@ exports.removeBannerImages = async (req, res) => {
   }
 };
 
-exports.getBannerImages = async (req, res) => {
+exports.getMediaFiles = async (req, res) => {
   try {
-    const state = await BannerImages.findOne({ _id: req.params._id }).exec();
+    const state = await MediaFiles.findOne({ _id: req.params._id }).exec();
     res.json(state);
   } catch (error) {
     res.status(400).send(error);
   }
 };
 
-exports.updateBannerImages = async (req, res) => {
+exports.updateMediaFiles = async (req, res) => {
   try {
-    let bannerImage = req.file
-      ? `uploads/BannerImg/${req.file.filename}`
+    let MediaFile = req.file
+      ? `uploads/MediaFile/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
-    if (bannerImage != null) {
-      fieldvalues.bannerImage = bannerImage;
+    if (MediaFile != null) {
+      fieldvalues.MediaFile = MediaFile;
     }
-    const update = await BannerImages.findOneAndUpdate(
+    const update = await MediaFiles.findOneAndUpdate(
       { _id: req.params._id },
       fieldvalues,
 

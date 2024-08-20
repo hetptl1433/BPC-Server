@@ -3,7 +3,8 @@ const { Schema, model, Types } = require("mongoose");
 const CompanyLocationSchema = new mongoose.Schema(
   {
     CityID: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "City",
       required: true,
     },
     StateID: {

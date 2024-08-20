@@ -44,6 +44,7 @@ router.get("/auth/listActive/blogs", catchAsync(listActiveBlogs));
 router.get("/auth/serachTitle/blogs", catchAsync(SearchBlog));
 
 router.get("/auth/serachblogDetails/blogs", catchAsync(SerachBlogDetails));
+router.post("/auth/create/blogs", catchAsync(createBlogs));
 
 router.post("/auth/topPopularPosts/blogs", catchAsync(topPopularPosts));
 

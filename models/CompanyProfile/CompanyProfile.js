@@ -1,80 +1,59 @@
+
 const mongoose = require("mongoose");
 const { Schema, model, Types } = require("mongoose");
-const HallBookSchema = new mongoose.Schema(
+const CompanyProfileSchema = new mongoose.Schema(
   {
-    Name: {
+    CompanyName: {
       type: String,
       required: true,
     },
-    Desc: {
+    Email: {
       type: String,
       required: true,
     },
-    HalfDayCapacity: {
+    SalesEmail: {
       type: String,
+      required: true,
+    },
+    SupportEmail: {
+      type: String,
+      required: true,
+    },
+    PartnerEmail: {
+      type: String,
+      required: true,
+    },
+    Address: {
+      type: String,
+      required: true,
+    },
+    PhoneOff1: {
+      type: String,
+      required: true,
+    },
+    PhoneOff2: {
+      type: String,
+      required: true,
+    },
+    MobileOne1: {
+      type: String,
+      required: true,
+    },
+    MobileOne2: {
+      type: String,
+      required: true,
+    },
+    productImage: {
+      type: String,
+      required: true,
+    },
 
-      required: true,
-    },
-    HalfDayBasicValue: {
-      type: String,
-
-      required: true,
-    },
-    HalfDayCentralGST: {
-      type: String,
-
-      required: true,
-    },
-    HalfDayStateGST: {
-      type: String,
-
-      required: true,
-    },
-    HalfDayTotal: {
-      type: String,
-
-      required: true,
-    },
-    FullDayCapacity: {
-      type: String,
-
-      required: true,
-    },
-    FullDayBasicValue: {
-      type: String,
-
-      required: true,
-    },
-    FullDayCentralGST: {
-      type: String,
-
-      required: true,
-    },
-    FullDayStateGST: {
-      type: String,
-
-      required: true,
-    },
-    FullDayTotal: {
-      type: String,
-
-      required: true,
-    },
-    SortOrder: {
-      type: Number,
-
-      required: true,
-    },
-  Icon: {
-      type: String,
-      required: true
-    },
-    
     IsActive: {
       type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("HallBooking", HallBookSchema);
+module.exports = mongoose.model("CompanyProfile", CompanyProfileSchema);

@@ -148,6 +148,7 @@ const TestQuestionMasterSchema = new mongoose.Schema(
 
     SortOrder: {
       type: Number,
+      default: 0,
       required: true,
     },
 
