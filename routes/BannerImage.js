@@ -10,6 +10,7 @@ const {
   listBannerImagesByParams,
   getBannerImages,
   updateBannerImages,
+  listActiveBannerImages,
   removeBannerImages,
 } = require("../controllers/BannerImage/BannerImages");
 const multer = require("multer");
@@ -34,6 +35,12 @@ router.post(
 );
 
 router.get("/auth/list/banner-images1", catchAsync(listBannerImages));
+
+router.get(
+  "/auth/list-active/banner-images1",
+  catchAsync(listActiveBannerImages)
+);
+
 
 router.post(
   "/auth/list-by-params/banner-images1",

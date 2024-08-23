@@ -10,6 +10,17 @@ exports.listDownloadFiles = async (req, res) => {
     res.status(400).send(error);
   }
 };
+exports.listActiveDownloadFiles = async (req, res) => {
+ try {
+   const list = await DownloadFiles.find({ IsActive: true })
+     .sort({ createdAt: -1 })
+     .exec();
+   console.log("list Active DownloadFile", list);
+   res.json(list);
+ } catch (error) {
+   return res.status(400).send(error);
+ }
+};
 
 exports.createDownloadFiles = async (req, res) => {
   try {

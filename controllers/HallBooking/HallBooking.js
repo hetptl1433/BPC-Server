@@ -3,7 +3,9 @@ const HallBook = require("../../models/HallBooking/HallBooking");
 
 exports.listHallBook = async (req, res) => {
   try {
-    const list = await HallBook.find().sort({ createdAt: -1 }).exec();
+    const list = await HallBook.find({ IsActive: true })
+      .sort({ createdAt: -1 })
+      .exec();
     res.json(list);
   } catch (error) {
     console.log(error);

@@ -15,7 +15,6 @@ exports.createCoursesFun = async (req, res) => {
       IsActive,
     } = req.body;
     const addCoursesFun = await new CoursesFun({ Name, Duration, Timing , Eligibility, Fees, SortOrder, Desc , IsActive }).save();
-    console.log("create Courses", addCoursesFun);
     res.status(200).json({ isOk: true, data: addCoursesFun, message: "" });
   } catch (err) {
     res.status(200).json({ isOk: false, message: "Error creating BPC Courses" });
@@ -24,10 +23,14 @@ exports.createCoursesFun = async (req, res) => {
 
 exports.getCoursesFun = async (req, res) => {
   try {
+    console.log("is here");
+
+    console.log("wwww",req.params._id);
     const find = await CoursesFun.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
+    
   }
 };
 
@@ -45,7 +48,6 @@ exports.listActiveCoursesFun = async (req, res) => {
     const list = await CoursesFun.find({ IsActive: true })
       .sort({ createdAt: 1 })
       .exec();
-    console.log("list active Courses", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);

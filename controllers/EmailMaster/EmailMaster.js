@@ -1,60 +1,65 @@
 
-const Content = require("../../models/Content/Content");
+const EmailMaster = require("../../models/EmailMaster/EmailMaster");
 
-exports.createContent = async (req, res) => {
+exports.createEmailMaster = async (req, res) => {
   try {
     console.log("Received request body:", req.body);
-    const { Title, subTitle, Desc, IsActive } = req.body;
-    const addContent = await new Content({ Title, subTitle, Desc,  IsActive }).save();
-    console.log("create Content", addContent);
-    res.status(200).json({ isOk: true, data: addContent, message: "" });
+    const {
+      MailerName,
+      Email,
+      Password,
+      OutgoingServer,
+      outgoingPort,
+      SSLTYpe,
+      IsActive,
+    } = req.body;
+    const addEmailMaster = await new EmailMaster({
+      MailerName,
+      Email,
+      Password,
+      OutgoingServer,
+      outgoingPort,
+      SSLType,
+      IsActive,
+    }).save();
+    console.log("create EmailMaster", addEmailMaster);
+    res.status(200).json({ isOk: true, data: addEmailMaster, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating youtube description" });
+    res.status(200).json({ isOk: false, message: "Error creating Email" });
   }
 };
 
-exports.getContent = async (req, res) => {
+exports.getEmailMaster = async (req, res) => {
   try {
-    const find = await Content.findOne({ _id: req.params._id }).exec();
+    const find = await EmailMaster.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
-    console.log("err",error)
-    return res.status(500).send(error);
-  }
-};
-exports.getContentBySubTitle = async (req, res) => {
- try {
-  console.log(req.params.subTitle);
-    const find = await Content.findOne({ subTitle: req.params.subTitle }).exec();
-    res.json(find);
-  } catch (error) {
-    console.log("err",error)
     return res.status(500).send(error);
   }
 };
 
-
-exports.listContent = async (req, res) => {
+exports.listEmailMaster = async (req, res) => {
   try {
-    const list = await Content.find().sort({ createdAt: 1 }).exec();
+    const list = await EmailMaster.find().sort({ createdAt: 1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveContent = async (req, res) => {
+exports.listActiveEmailMaster = async (req, res) => {
   try {
-    const list = await Content.find({ IsActive: true })
+    const list = await EmailMaster.find({ IsActive: true })
       .sort({ createdAt: 1 })
       .exec();
+    console.log("list active EmailMaster", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listContentByParams = async (req, res) => {
+exports.listEmailMasterByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -129,7 +134,7 @@ exports.listContentByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await Content.aggregate(query);
+    const list = await EmailMaster.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -137,9 +142,9 @@ exports.listContentByParams = async (req, res) => {
   }
 };
 
-exports.updateContentMaster = async (req, res) => {
+exports.updateEmailMasterMaster = async (req, res) => {
   try {
-    const update = await Content.findOneAndUpdate(
+    const update = await EmailMaster.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -150,9 +155,9 @@ exports.updateContentMaster = async (req, res) => {
   }
 };
 
-exports.removeContentMaster = async (req, res) => {
+exports.removeEmailMasterMaster = async (req, res) => {
   try {
-    const delTL = await Content.deleteOne({
+    const delTL = await EmailMaster.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

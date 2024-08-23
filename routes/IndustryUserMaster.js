@@ -5,7 +5,16 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 
 const multer = require("multer");
-const { createIndustryUserMasterDetails, listIndustryUserMasterDetails, listIndustryUserMasterDetailsByParams, getIndustryUserMasterDetails, updateIndustryUserMasterDetails, removeIndustryUserMasterDetails, listIndustryUserMasterByCategory } = require("../controllers/IndustryUserMaster/IndustryUserMaster");
+const {
+  createIndustryUserMasterDetails,
+  listIndustryUserMasterDetails,
+  listIndustryUserMasterDetailsByParams,
+  getIndustryUserMasterDetails,
+  updateIndustryUserMasterDetails,
+  removeIndustryUserMasterDetails,
+  listIndustryUserMasterByCategory,
+  loginUser,
+} = require("../controllers/IndustryUserMaster/IndustryUserMaster");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -56,5 +65,8 @@ router.get(
 // router.post("/auth/list/IndustryUserMaster-by-id/:productId", catchAsync(getProductByID));
 
 ///
+
+
+router.post("/ExamUserLogin", catchAsync(loginUser));
 
 module.exports = router;

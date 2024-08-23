@@ -11,6 +11,7 @@ const {
   getDownloadFiles,
   updateDownloadFiles,
   removeDownloadFiles,
+  listActiveDownloadFiles,
 } = require("../controllers/Download/Download");
 const multer = require("multer");
 
@@ -34,6 +35,7 @@ router.post(
 );
 
 router.get("/auth/list/DownloadFiles", catchAsync(listDownloadFiles));
+router.get("/auth/list-active/DownloadFiles", catchAsync(listActiveDownloadFiles));
 
 router.post(
   "/auth/list-by-params/DownloadFiles",

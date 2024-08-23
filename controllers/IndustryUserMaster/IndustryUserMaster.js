@@ -1,5 +1,13 @@
 const IndustryUserMaster = require("../../models/IndustryUserMaster/IndustryUserMaster");
 const fs = require("fs");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const validator = require("validator");
+const saltRounds = 10;
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET);
+};
+
 
 exports.getIndustryUserMasterDetails = async (req, res) => {
   try {
@@ -12,28 +20,18 @@ exports.getIndustryUserMasterDetails = async (req, res) => {
 
 exports.createIndustryUserMasterDetails = async (req, res) => {
   try {
+    // Check and create directory if it doesn't exist
     if (!fs.existsSync(`${__basedir}/uploads/IndustryUserMaster`)) {
       fs.mkdirSync(`${__basedir}/uploads/IndustryUserMaster`);
     }
 
+    // Set product image path if file is provided
     let productImage = req.file
       ? `uploads/IndustryUserMaster/${req.file.filename}`
       : null;
-let {
-  UserGroupCategory,
-  IndustryCategory,
-  Name,
-  Email,
-  Mobile,
-  landLine,
-  UserName,
-  Password,
-  Address,
-  IsActive
-} = req.body;
 
-
-    const add = await new IndustryUserMaster({
+    // Destructure request body
+    let {
       UserGroupCategory,
       IndustryCategory,
       Name,
@@ -44,9 +42,30 @@ let {
       Password,
       Address,
       IsActive,
+    } = req.body;
+
+    // Hash the password before saving it
+    const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+    // Create new IndustryUserMaster document with hashed password
+    const add = await new IndustryUserMaster({
+      UserGroupCategory,
+      IndustryCategory,
+      Name,
+      Email,
+      Mobile,
+      landLine,
+      UserName,
+      Password: hashedPassword, // Use hashed password here
+      Address,
+      IsActive,
+      productImage, // Include productImage if needed
     }).save();
+
+    // Send successful response
     res.status(200).json({ isOk: true, data: add, message: "" });
   } catch (err) {
+    // Log error and send error response
     console.log(err);
     return res.status(500).send(err);
   }
@@ -247,3 +266,36 @@ exports.removeIndustryUserMasterDetails = async (req, res) => {
 //     return res.status(400).send(error);
 //   }
 // };
+
+
+//login user
+
+exports.loginUser = async (req, res) => {
+  const { UserName, Password } = req.body;
+
+  try {
+    // Find the user by UserName
+    const user = await IndustryUserMaster.findOne({ UserName });
+
+    if (!user) {
+      return res.json({ success: false, message: "User Doesn't Exist!" });
+    }
+
+    // Compare the provided plain-text password with the stored hashed password
+    const isMatch = await bcrypt.compare(Password, user.Password);
+
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid Credentials" });
+    }
+
+    // Generate a token (assuming createToken is a function you have to create a JWT)
+    const token = createToken(user._id);
+
+    // Return success response with the token
+     res.json({ success: true, token });
+  } catch (error) {
+    // Log any errors that occur and send a general error response
+    console.log(error);
+    res.json({ success: false, message: "Error" });
+  }
+};

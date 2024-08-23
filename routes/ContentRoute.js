@@ -3,7 +3,16 @@ const express = require("express");
 const router = express.Router();
 
 const catchAsync = require("../utils/catchAsync");
-const { createContent, listContent, listActiveContent, listContentByParams, getContent, updateContentMaster, removeContentMaster } = require("../controllers/ContentController/ContentControl");
+const {
+  createContent,
+  listContent,
+  listActiveContent,
+  listContentByParams,
+  getContent,
+  updateContentMaster,
+  removeContentMaster,
+  getContentBySubTitle,
+} = require("../controllers/ContentController/ContentControl");
 const multer = require('multer');
 const upload = multer();
 
@@ -14,6 +23,7 @@ router.get(
   "/auth/list-active/Content",
   catchAsync(listActiveContent)
 );
+router.get("/auth/list/Content", catchAsync(listContent));
 
 router.post(
   "/auth/list-by-params/Content",
@@ -21,6 +31,7 @@ router.post(
 );
 
 router.get("/auth/get/Content/:_id", catchAsync(getContent));
+router.get("/auth/get/subContent/:subTitle", catchAsync(getContentBySubTitle));
 
 router.put(
   "/auth/update/Content/:_id",upload.none(),

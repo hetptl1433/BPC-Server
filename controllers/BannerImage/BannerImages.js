@@ -11,6 +11,17 @@ exports.listBannerImages = async (req, res) => {
   }
 };
 
+exports.listActiveBannerImages = async (req, res) => {
+  try {
+    const list = await BannerImages.find({ IsActive: true })
+      .sort({ createdAt: -1 })
+      .exec();
+    console.log("list BannerImages", list);
+    res.json(list);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
 exports.createBannerImages = async (req, res) => {
   try {
     if (!fs.existsSync(`${__basedir}/uploads/BannerImage`)) {
