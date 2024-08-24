@@ -1,30 +1,46 @@
 const mongoose = require("mongoose");
 const { Schema, model, Types } = require("mongoose");
-const EmailMasterSchema = new mongoose.Schema(
+const ContactFormSchema = new mongoose.Schema(
   {
-    MailerName: {
+    Name: {
       type: String,
       required: true,
     },
     Email: {
       type: String,
-
       required: true,
     },
-    Password: {
+    Mobile: {
       type: String,
 
       required: true,
     },
-    OutgoingServer: {
+    Company: {
       type: String,
+
       required: true,
     },
-    outgoingPort: {
+    City: {
       type: String,
+
       required: true,
     },
-    SSLType: {
+    Services: {
+      type: String,
+
+      required: true,
+    },
+    Help: {
+      type: String,
+
+      required: true,
+    },
+    HereFrom: {
+      type: String,
+
+      required: true,
+    },
+    KnowMore: {
       type: Boolean,
     },
 
@@ -35,4 +51,4 @@ const EmailMasterSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-  module.exports = mongoose.model("EmailMaster", EmailMasterSchema);
+module.exports = mongoose.model("ContactForm", ContactFormSchema);

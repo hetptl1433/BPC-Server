@@ -1,65 +1,60 @@
 
-const EmailMaster = require("../../models/EmailMaster/EmailMaster");
+const ContactForm = require("../../models/Forms/ContactForm");
 
-exports.createEmailMaster = async (req, res) => {
+exports.createContactForm = async (req, res) => {
   try {
-    console.log("Received request body:", req.body);
-    const {
-      MailerName,
-      Email,
-      Password,
-      OutgoingServer,
-      outgoingPort,
-      SSLType,
-      IsActive,
-    } = req.body;
-    const addEmailMaster = await new EmailMaster({
-      MailerName,
-      Email,
-      Password,
-      OutgoingServer,
-      outgoingPort,
-      SSLType,
-      IsActive,
-    }).save();
-    console.log("create EmailMaster", addEmailMaster);
-    res.status(200).json({ isOk: true, data: addEmailMaster, message: "" });
+   const {
+     Name,
+     email,
+     Mobile,
+     Company,
+     City,
+     Services,
+     Help,
+     HereFrom,
+     KnowMore,
+     IsActive,
+   } = req.body;
+
+    const addContactForm = await new ContactForm(req.body).save();
+    console.log("create contact us detail", addContactForm);
+    res.status(200).json({ isOk: true, data: addContactForm, message: "" });
   } catch (err) {
-    res.status(200).json({ isOk: false, message: "Error creating Email" });
+    res.status(200).json({ isOk: false, message: "Error creating ContactForm" });
   }
 };
 
-exports.getEmailMaster = async (req, res) => {
+exports.getContactForm = async (req, res) => {
   try {
-    const find = await EmailMaster.findOne({ _id: req.params._id }).exec();
+    const find = await ContactForm.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listEmailMaster = async (req, res) => {
+exports.listContactForm = async (req, res) => {
   try {
-    const list = await EmailMaster.find().sort({ createdAt: 1 }).exec();
+    const list = await ContactForm.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveEmailMaster = async (req, res) => {
+exports.listActiveContactForm = async (req, res) => {
   try {
-    const list = await EmailMaster.find({ IsActive: true })
-      .sort({ createdAt: 1 })
+    const list = await ContactForm.find({ IsActive: true })
+      .sort({ createdAt: -1 })
       .exec();
-    console.log("list active EmailMaster", list);
+    console.log("list ContactForm", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listEmailMasterByParams = async (req, res) => {
+exports.listContactFormByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -108,7 +103,7 @@ exports.listEmailMasterByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Title: { $regex: match, $options: "i" },
+                Name: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -134,7 +129,7 @@ exports.listEmailMasterByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await EmailMaster.aggregate(query);
+    const list = await ContactForm.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -142,9 +137,9 @@ exports.listEmailMasterByParams = async (req, res) => {
   }
 };
 
-exports.updateEmailMasterMaster = async (req, res) => {
+exports.updateContactForm= async (req, res) => {
   try {
-    const update = await EmailMaster.findOneAndUpdate(
+    const update = await ContactForm.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -155,9 +150,9 @@ exports.updateEmailMasterMaster = async (req, res) => {
   }
 };
 
-exports.removeEmailMasterMaster = async (req, res) => {
+exports.removeContactForm = async (req, res) => {
   try {
-    const delTL = await EmailMaster.deleteOne({
+    const delTL = await ContactForm.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const catchAsync = require("../utils/catchAsync");
-const { createEmailMaster, listEmailMaster, listActiveEmailMaster, listEmailMasterByParams, getEmailMaster, updateEmailMasterMaster, removeEmailMasterMaster } = require("../controllers/EmailADD/EmailADD");
+const { createEmailMaster, listEmailMaster, listActiveEmailMaster, listEmailMasterByParams, getEmailMaster, updateEmailMasterMaster, removeEmailMasterMaster } = require("../controllers/EmailMaster/EmailMaster");
 const multer = require('multer');
 const upload = multer();
 
