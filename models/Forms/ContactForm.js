@@ -46,6 +46,7 @@ const ContactFormSchema = new mongoose.Schema(
 
     IsActive: {
       type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

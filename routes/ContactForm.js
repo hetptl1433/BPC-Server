@@ -12,6 +12,7 @@ const {
   listContactForm,
   listActiveContactForm,
   listContactFormByParams,
+  removeContactForm,
 } = require("../controllers/Forms/ContactForm");
 
 router.post("/auth/ContactForm", catchAsync(createContactForm));
@@ -25,6 +26,6 @@ router.get("/auth/get/ContactForm/:_id", catchAsync(getContactForm));
 
 router.put("/auth/update/ContactForm/:_id", catchAsync(updateContactFormMaster));
 
-router.delete("/auth/remove/ContactForm/:_id", catchAsync(removeContactFormMaster));
+router.delete("/auth/remove/ContactForm/:_id", catchAsync(removeContactForm));
 
 module.exports = router;

@@ -1,38 +1,29 @@
 
-const ContactForm = require("../../models/Forms/ContactForm");
+const CourseForm = require("../../models/Forms/CourseForm");
 
-exports.createContactForm = async (req, res) => {
+exports.createCourseForm = async (req, res) => {
   try {
     const {
-      Name,
-      Email, // Changed from `email` to `Email`
+      CourseName,
+      CompanyName,
+      ContactPerson, 
+      Email,
       Mobile,
-      Company,
-      City,
-      Services,
-      Help,
-      HereFrom,
-      KnowMore,
-      IsActive,
+      
     } = req.body;
 
     
     // Add more as needed
 
-    const addContactForm = await new ContactForm({
-      Name,
-      Email, // Changed from `email` to `Email`
+    const addCourseForm = await new CourseForm({
+      CourseName,
+      CompanyName,
+      ContactPerson, 
+      Email,
       Mobile,
-      Company,
-      City,
-      Services,
-      Help,
-      HereFrom,
-      KnowMore,
-      IsActive,
     }).save();
 
-    res.status(200).json({ isOk: true, data: addContactForm, message: "" });
+    res.status(200).json({ isOk: true, data: addCourseForm, message: "" });
   } catch (err) {
     res
       .status(200)
@@ -41,37 +32,36 @@ exports.createContactForm = async (req, res) => {
 };
 
 
-exports.getContactForm = async (req, res) => {
+exports.getCourseForm = async (req, res) => {
   try {
-    const find = await ContactForm.findOne({ _id: req.params._id }).exec();
+    const find = await CourseForm.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.listContactForm = async (req, res) => {
+exports.listCourseForm = async (req, res) => {
   try {
-    const list = await ContactForm.find().sort({ createdAt: -1 }).exec();
+    const list = await CourseForm.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listActiveContactForm = async (req, res) => {
+exports.listActiveCourseForm = async (req, res) => {
   try {
-    const list = await ContactForm.find({ IsActive: true })
+    const list = await CourseForm.find({ IsActive: true })
       .sort({ createdAt: -1 })
       .exec();
-    console.log("list ContactForm", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listContactFormByParams = async (req, res) => {
+exports.listCourseFormByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -146,7 +136,7 @@ exports.listContactFormByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await ContactForm.aggregate(query);
+    const list = await CourseForm.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -154,9 +144,9 @@ exports.listContactFormByParams = async (req, res) => {
   }
 };
 
-exports.updateContactForm= async (req, res) => {
+exports.updateCourseForm= async (req, res) => {
   try {
-    const update = await ContactForm.findOneAndUpdate(
+    const update = await CourseForm.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -167,9 +157,10 @@ exports.updateContactForm= async (req, res) => {
   }
 };
 
-exports.removeContactForm = async (req, res) => {
+exports.removeCourseForm = async (req, res) => {
   try {
-    const delTL = await ContactForm.deleteOne({
+    console.log("wqd");
+    const delTL = await CourseForm.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);
