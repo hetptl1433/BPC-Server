@@ -8,7 +8,7 @@ const ExtraBookingSchema = new mongoose.Schema(
     Price: {
       type: Number,
     },
-    SortOrder: {
+    SortOrder: {  
       type: Number,
     },
     IsActive: {
