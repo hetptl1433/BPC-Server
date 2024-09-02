@@ -10,7 +10,7 @@ const RASSchema = new mongoose.Schema(
       type: Number,
     },
     Date: {
-      type: Date,
+      type: String,
     },
     FullName: {
       type: String,

@@ -1,47 +1,64 @@
-const UserGroup = require("../../models/UserGroup/UserGroup");
-
-exports.getUserGroupMaster = async (req, res) => {
+const ExtraBookingDetails = require("../../models/ExtraBookingDetails/ExtraBookingDetails");
+exports.createExtraBookingDetails = async (req, res) => {
   try {
-    console.log(req.params._id)
-    const find = await UserGroup.findOne({ _id: req.params._id }).exec();
+
+    console.log(req.body);
+    const addExtraBookingDetails = await new ExtraBookingDetails(req.body).save();
+    console.log("create ExtraBookingDetails", addExtraBookingDetails);
+    res
+      .status(200)
+      .json({
+        isOk: true,
+        data: addExtraBookingDetails,
+        message: addExtraBookingDetails,
+      });
+  } catch (err) {
+    res.status(200).json({ isOk: false, message: "Error creating ExtraBookingDetails" });
+  }
+};
+
+exports.getExtraBookingDetails = async (req, res) => {
+  try {
+    const find = await ExtraBookingDetails.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
-    console.log(error);
+    return res.status(500).send(error);
+  }
+};
+exports.getExtraBookingDetailsById = async (req, res) => {
+  try {
+    
+    const find = await ExtraBookingDetails.find({
+      OrderId: req.params._id,
+    }).exec();
+    res.json(find);
+  } catch (error) {
     return res.status(500).send(error);
   }
 };
 
-exports.createUserGroupMaster = async (req, res) => {
+exports.listExtraBookingDetails = async (req, res) => {
   try {
-    const add = await new UserGroup(req.body).save();
-    res.json(add);
-  } catch (err) {
-    return res.status(400).send(err);
-  }
-};
-
-exports.listUserGroupMaster = async (req, res) => {
-  try {
-    const list = await UserGroup.find({ IsActive: true }).sort({ categoryName : 1 }).exec();
+    const list = await ExtraBookingDetails.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listUserGroups = async (req, res) => {
+exports.listActiveExtraBookingDetails = async (req, res) => {
   try {
-    const list = await UserGroup.find({ IsActive: true })
-      .sort({ createdAt: 1 })
+    const list = await ExtraBookingDetails.find({ IsActive: true })
+      .sort({ createdAt: -1 })
       .exec();
-    console.log("list User Group", list);
+    console.log("list avi", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listUserGroupMasterByParams = async (req, res) => {
+exports.listExtraBookingDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -90,7 +107,7 @@ exports.listUserGroupMasterByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                categoryName: { $regex: match, $options: "i" },
+                ExtraBookingDetails: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -116,7 +133,7 @@ exports.listUserGroupMasterByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await UserGroup.aggregate(query);
+    const list = await ExtraBookingDetails.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -124,9 +141,9 @@ exports.listUserGroupMasterByParams = async (req, res) => {
   }
 };
 
-exports.updateUserGroupMaster = async (req, res) => {
+exports.updateExtraBookingDetailsMaster = async (req, res) => {
   try {
-    const update = await UserGroup.findOneAndUpdate(
+    const update = await ExtraBookingDetails.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -137,9 +154,9 @@ exports.updateUserGroupMaster = async (req, res) => {
   }
 };
 
-exports.removeUserGroupMaster = async (req, res) => {
+exports.removeExtraBookingDetailsMaster = async (req, res) => {
   try {
-    const delTL = await UserGroup.deleteOne({
+    const delTL = await ExtraBookingDetails.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

@@ -8,6 +8,7 @@ const {
   listRASDataByParams,
   updateRASDataDetails,
   removeRASDataDetails,
+  getEmailRASDataDetails,
 } = require("../controllers/RASData/RASData");
 
 // Create new RASData
@@ -15,12 +16,16 @@ router.post("/auth/RASData", catchAsync(createRASDataDetails));
 
 // Get RASData details by ID
 router.get("/auth/get/RASData/:_id", catchAsync(getRASDataDetails));
+router.get("/auth/get/email/RASData/:EmailID", catchAsync(getEmailRASDataDetails));
+
 
 // List all RASData
 router.get("/auth/list/RASData", catchAsync(listRASDataDetails));
 
 // List RASData by parameters
 router.post("/auth/list-by-params/RASData", catchAsync(listRASDataByParams));
+
+
 
 // Update RASData by ID
 router.put("/auth/update/RASData/:_id", catchAsync(updateRASDataDetails));

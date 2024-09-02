@@ -14,6 +14,7 @@ const {
   removeIndustryUserMasterDetails,
   listIndustryUserMasterByCategory,
   loginUser,
+  getExamIndustryUserMasterDetails,
 } = require("../controllers/IndustryUserMaster/IndustryUserMaster");
 
 const multerStorage = multer.diskStorage({
@@ -43,6 +44,11 @@ router.post(
 );
 
 router.get("/auth/get/IndustryUserMaster-details/:_id", catchAsync(getIndustryUserMasterDetails));
+
+router.get(
+  "/auth/get/test/IndustryUserMaster-details/:_id",
+  catchAsync(getExamIndustryUserMasterDetails)
+);
 
 router.put(
   "/auth/update/IndustryUserMaster-details/:_id",

@@ -62,6 +62,18 @@ exports.listTestCatMasterDetails = async (req, res) => {
   }
 };
 
+exports.listTestCatMasterExamDetails = async (req, res) => {
+  try {
+    const list = await TestCatMaster.find()
+      .sort({ TestName: 1 })
+      .populate("category") // Populate the 'category' field with data from the referenced collection
+      .exec();
+    res.json(list);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
+
 exports.listTestCatMasterByCategory = async (req, res) => {
   try {
     const list = await TestCatMaster.find({
@@ -195,52 +207,28 @@ exports.removeTestCatMasterDetails = async (req, res) => {
   }
 };
 
-// exports.CategoryLEDList = async (req, res) => {
-//   try {
-//     const { option, categoryid } = req.params;
+exports.listTestCatMasterDetailsByCategory = async (req, res) => {
+  try {
+    // Fetch all TestCatMaster documents and populate the category field
+    const list = await TestCatMaster.find()
+      .sort({ TestName: 1 })
+      .populate("category")
+      .exec();
 
-//     const list = await TestCatMaster.find({
-//       category: categoryid,
-//       IsActive: true,
-//     })
-//       .sort({ createdAt: -1 })
-//       .exec();
+    // Filter the results by matching categoryName
+    const filteredList = list.filter(
+      (item) =>
+        item.category && item.category.categoryName === req.params.category
+    );
 
-//     let sortedList;
+    if (filteredList.length === 0) {
+      return res.status(404).json({ message: "No matching categories found" });
+    }
 
-//     switch (option) {
-//       case "1": // Newest
-//         sortedList = list;
-//         break;
-//       case "2": // Price low to high
-//         sortedList = list.sort((a, b) => a.price - b.price);
-//         break;
-//       case "3": // Price high to low
-//         sortedList = list.sort((a, b) => b.price - a.price);
+    res.json(filteredList);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 
-//         break;
-//       case "4": // A to Z
-//         sortedList = list.sort((a, b) =>
-//           a.TestName.localeCompare(b.TestName)
-//         );
-//         break;
-//       case "5": // Z to A
-//         sortedList = list.sort((a, b) =>
-//           b.TestName.localeCompare(a.TestName)
-//         );
-//         break;
-//       default:
-//         // Default sorting, perhaps by createdAt descending
-//         sortedList = list;
-//     }
-
-//     if (sortedList) {
-//       res.status(200).json({ isOk: true, data: sortedList, message: "" });
-//     } else {
-//       res.status(200).json({ isOk: false, message: "No data Found" });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).send(error);
-//   }
-// };

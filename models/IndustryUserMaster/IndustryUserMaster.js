@@ -18,7 +18,7 @@ const IndustryUserMasterSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Email: {
+     Email: {
       type: String,
       required: true,
     },

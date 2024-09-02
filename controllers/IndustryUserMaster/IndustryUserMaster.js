@@ -3,6 +3,7 @@ const fs = require("fs");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
+const { getUserGroupMaster } = require("../UserGroup/UserGroup");
 const saltRounds = 10;
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
@@ -17,6 +18,8 @@ exports.getIndustryUserMasterDetails = async (req, res) => {
     return res.status(500).send(error);
   }
 };
+
+
 
 exports.createIndustryUserMasterDetails = async (req, res) => {
   try {
@@ -45,7 +48,7 @@ exports.createIndustryUserMasterDetails = async (req, res) => {
     } = req.body;
 
     // Hash the password before saving it
-    const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
 
     // Create new IndustryUserMaster document with hashed password
     const add = await new IndustryUserMaster({
@@ -56,7 +59,7 @@ exports.createIndustryUserMasterDetails = async (req, res) => {
       Mobile,
       landLine,
       UserName,
-      Password: hashedPassword, // Use hashed password here
+      Password, // Use hashed password here
       Address,
       IsActive,
       productImage, // Include productImage if needed

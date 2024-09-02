@@ -1,47 +1,51 @@
-const UserGroup = require("../../models/UserGroup/UserGroup");
-
-exports.getUserGroupMaster = async (req, res) => {
+const BookingDetails = require("../../models/BookingDetails/BookingDetails");
+exports.createBookingDetails = async (req, res) => {
   try {
-    console.log(req.params._id)
-    const find = await UserGroup.findOne({ _id: req.params._id }).exec();
+    const addBookingDetails = await new BookingDetails(req.body).save();
+    console.log("create BookingDetails", addBookingDetails);
+    res
+      .status(200)
+      .json({
+        isOk: true,
+        data: addBookingDetails,
+        message: addBookingDetails,
+      });
+  } catch (err) {
+    res.status(200).json({ isOk: false, message: "Error creating BookingDetails" });
+  }
+};
+
+exports.getBookingDetails = async (req, res) => {
+  try {
+    const find = await BookingDetails.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
-    console.log(error);
     return res.status(500).send(error);
   }
 };
 
-exports.createUserGroupMaster = async (req, res) => {
+exports.listBookingDetails = async (req, res) => {
   try {
-    const add = await new UserGroup(req.body).save();
-    res.json(add);
-  } catch (err) {
-    return res.status(400).send(err);
-  }
-};
-
-exports.listUserGroupMaster = async (req, res) => {
-  try {
-    const list = await UserGroup.find({ IsActive: true }).sort({ categoryName : 1 }).exec();
+    const list = await BookingDetails.find().sort({ createdAt: -1 }).exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listUserGroups = async (req, res) => {
+exports.listActiveBookingDetails = async (req, res) => {
   try {
-    const list = await UserGroup.find({ IsActive: true })
-      .sort({ createdAt: 1 })
+    const list = await BookingDetails.find({ IsActive: true })
+      .sort({ createdAt: -1 })
       .exec();
-    console.log("list User Group", list);
+    console.log("list avi", list);
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
   }
 };
 
-exports.listUserGroupMasterByParams = async (req, res) => {
+exports.listBookingDetailsByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
 
@@ -90,7 +94,7 @@ exports.listUserGroupMasterByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                categoryName: { $regex: match, $options: "i" },
+                BookingDetails: { $regex: match, $options: "i" },
               },
             ],
           },
@@ -116,7 +120,7 @@ exports.listUserGroupMasterByParams = async (req, res) => {
       ].concat(query);
     }
 
-    const list = await UserGroup.aggregate(query);
+    const list = await BookingDetails.aggregate(query);
 
     res.json(list);
   } catch (error) {
@@ -124,9 +128,9 @@ exports.listUserGroupMasterByParams = async (req, res) => {
   }
 };
 
-exports.updateUserGroupMaster = async (req, res) => {
+exports.updateBookingDetailsMaster = async (req, res) => {
   try {
-    const update = await UserGroup.findOneAndUpdate(
+    const update = await BookingDetails.findOneAndUpdate(
       { _id: req.params._id },
       req.body,
       { new: true }
@@ -137,9 +141,9 @@ exports.updateUserGroupMaster = async (req, res) => {
   }
 };
 
-exports.removeUserGroupMaster = async (req, res) => {
+exports.removeBookingDetailsMaster = async (req, res) => {
   try {
-    const delTL = await UserGroup.deleteOne({
+    const delTL = await BookingDetails.deleteOne({
       _id: req.params._id,
     });
     res.json(delTL);

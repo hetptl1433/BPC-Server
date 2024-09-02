@@ -9,6 +9,16 @@ exports.getRASDataDetails = async (req, res) => {
   }
 };
 
+exports.getEmailRASDataDetails = async (req, res) => {
+  try {
+    const results = await RASData.find({ EmailID: req.params.EmailID }).exec();
+    res.json(results); // Send the array of matching documents
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+
 exports.createRASDataDetails = async (req, res) => {
   try {
     let {

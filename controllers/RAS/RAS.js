@@ -172,6 +172,7 @@ exports.updateRAS = async (req, res) => {
 
 exports.removeRAS = async (req, res) => {
   try {
+    console.log("wqd");
     const delTL = await RAS.deleteOne({
       _id: req.params._id,
     });
