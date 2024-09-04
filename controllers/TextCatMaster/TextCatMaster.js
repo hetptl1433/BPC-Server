@@ -74,6 +74,18 @@ exports.listTestCatMasterExamDetails = async (req, res) => {
   }
 };
 
+
+exports.listTestCatMasterExamDetail = async (req, res) => {
+  try {
+    const list = await TestCatMaster.find()
+      .sort({ TestName: 1 })
+      .exec();
+    res.json(list);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
+};
+
 exports.listTestCatMasterByCategory = async (req, res) => {
   try {
     const list = await TestCatMaster.find({

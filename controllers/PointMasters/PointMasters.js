@@ -155,13 +155,7 @@ exports.createPointMaster = async (req, res) => {
     console.log(req.body);
     // const code = await PointMaster.findOne({ PointMasterCode: req.body.PointMasterCode });
     const PointMasterName = await PointMaster.findOne({ PointMasterName: req.body.PointMasterName });
-    if (PointMasterName) {
-      return res.status(200).json({
-        isOk: false,
-        field: 1,
-        message: "PointMaster with this name already exists!",
-      });
-    }
+   
     // else if (code) {
     //   return res
     //     .status(200)
@@ -171,11 +165,11 @@ exports.createPointMaster = async (req, res) => {
     //       message: "PointMaster with this code already exists!",
     //     });
     // }
-    else {
+    
       const addPointMaster = await new PointMaster(req.body).save();
       console.log("create PointMaster", addPointMaster);
       res.status(200).json({ isOk: true, data: addPointMaster });
-    }
+    
   } catch (err) {
     console.log("log error from create PointMaster", err);
     return res.status(400).send("create dynamic content failed");

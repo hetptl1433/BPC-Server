@@ -5,7 +5,7 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 
 const multer = require("multer");
-const { createTestCatMasterDetails, listTestCatMasterDetails, listTestCatMasterDetailsByParams, getTestCatMasterDetails, updateTestCatMasterDetails, removeTestCatMasterDetails, listTestCatMasterByCategory, listTestCatMasterExamDetails, listTestCatMasterDetailsByCategory } = require("../controllers/TextCatMaster/TextCatMaster");
+const { createTestCatMasterDetails, listTestCatMasterDetails, listTestCatMasterDetailsByParams, getTestCatMasterDetails, updateTestCatMasterDetails, removeTestCatMasterDetails, listTestCatMasterByCategory, listTestCatMasterExamDetails, listTestCatMasterDetailsByCategory, listTestCatMasterExamDetail } = require("../controllers/TextCatMaster/TextCatMaster");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -37,6 +37,11 @@ router.get(
   "/auth/list/TestCatMaster-detailsByName",
   catchAsync(listTestCatMasterExamDetails)
 );
+router.get(
+  "/auth/list/TestCatMaster-details",
+  catchAsync(listTestCatMasterExamDetail)
+);
+
 
 
 router.post(

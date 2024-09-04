@@ -11,6 +11,7 @@ const {
   createTestQuestionMaster,
   getTestQuestionMaster,
   updateTestQuestionMaster,
+  getTestQuestionMasterId,
 
  
 } = require("../controllers/TestQuestionMaster/TestQuestionMaster");
@@ -26,6 +27,11 @@ router.post(
 );
 router.delete("/auth/location/TestQuestionMaster/:_id", catchAsync(removeTestQuestionMaster));
 router.get("/auth/location/TestQuestionMaster/:_id", catchAsync(getTestQuestionMaster));
+
+router.get(
+  "/auth/location/TestQuestionMasterId/:_id",
+  catchAsync(getTestQuestionMasterId)
+);
 
 router.post(
   "/auth/location/create/TestQuestionMaster",

@@ -14,6 +14,9 @@ exports.listTestQuestionMaster = async (req, res) => {
   }
 };
 
+
+
+
 exports.listTestQuestionMasterByParams = async (req, res) => {
   try {
     let { skip, per_page, sorton, sortdir, match, isActive } = req.body;
@@ -122,27 +125,48 @@ exports.getTestQuestionMaster = async (req, res) => {
     res.status(400).send("get TestQuestionMaster failed");
   }
 };
+exports.getTestQuestionMasterId = async (req, res) => {
+  try {
+    // Find documents that match the TestMasterID with the given id
+    const state = await TestQuestionMaster.find({
+      TestMasterID: req.params._id,
+    }).exec();
+
+    if (state.length === 0) {
+      return res.status(404).send("No TestQuestionMaster found with the provided TestMasterID");
+    }
+
+    console.log("get TestQuestionMaster", state);
+    res.json(state);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Failed to get TestQuestionMaster");
+  }
+};
+
+
 
 exports.createTestQuestionMaster = async (req, res) => {
   try {
     console.log(req.body);
-    // const code = await TestQuestionMaster.findOne({ TestQuestionMasterCode: req.body.TestQuestionMasterCode });
-    const TestQuestionMasterName = await TestQuestionMaster.findOne({ TestQuestionMasterName: req.body.TestQuestionMasterName });
-   
-    // else if (code) {
-    //   return res
-    //     .status(200)
-    //     .json({
-    //       isOk: false,
-    //       field: 2,
-    //       message: "TestQuestionMaster with this code already exists!",
-    //     });
-    // }
- 
-      const addTestQuestionMaster = await new TestQuestionMaster(req.body).save();
+
+    // Filter out empty fields
+    const filteredBody = Object.fromEntries(
+      Object.entries(req.body).filter(([_, value]) => value !== "")
+    );
+
+    const TestQuestionMasterName = await TestQuestionMaster.findOne({
+      TestQuestionMasterName: filteredBody.TestQuestionMasterName,
+    });
+
+    // Create and save the new TestQuestionMaster if no matching name is found
+  
+      const addTestQuestionMaster = await new TestQuestionMaster(
+        filteredBody
+      ).save();
       console.log("create TestQuestionMaster", addTestQuestionMaster);
       res.status(200).json({ isOk: true, data: addTestQuestionMaster });
-    
+   
   } catch (err) {
     console.log("log error from create TestQuestionMaster", err);
     return res.status(400).send("create dynamic content failed");
