@@ -10,7 +10,7 @@ const IndustryUserMasterSchema = new mongoose.Schema(
     },
     IndustryCategory: {
       type: Schema.Types.ObjectId,
-      ref: "Industry",
+      ref: "Industries",
       required: true, 
     },
 

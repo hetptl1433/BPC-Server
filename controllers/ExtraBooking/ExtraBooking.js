@@ -90,7 +90,7 @@ exports.listExtraBookingByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Facebook: { $regex: match, $options: "i" },
+                Name: { $regex: match, $options: "i" },
               },
             ],
           },

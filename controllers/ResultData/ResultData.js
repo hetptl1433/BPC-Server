@@ -27,6 +27,29 @@ exports.getResultData = async (req, res) => {
   }
 };
 
+exports.getResultDataOfUser = async (req, res) => {
+  try {
+    const { userId, id } = req.params;
+
+    // Check if result data exists
+    const find = await ResultData.findOne({ userId, id }).exec();
+
+    if (!find) {
+      // If no data is found, return 404 status
+      return res
+        .status(404)
+        .json({ message: "No result data found for this user and id" });
+    }
+
+    // Return the found data
+    res.json(find);
+  } catch (error) {
+    // If an error occurs, return 500 status with error message
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
 exports.listResultData = async (req, res) => {
   try {
     const list = await ResultData.find().sort({ createdAt: 1 }).exec();
@@ -50,15 +73,27 @@ exports.listActiveResultData = async (req, res) => {
 
 exports.listResultDataByParams = async (req, res) => {
   try {
-    let { skip, per_page, sorton, sortdir, match, IsActive } = req.body;
+    let {
+      skip = 0,
+      per_page = 10,
+      sorton,
+      sortdir,
+      match,
+      IsActive,
+    } = req.body;
+
+    const { id } = req.params.id; // Extract the id from req.params
 
     let query = [
       {
-        $match: { IsActive: IsActive },
+        $match: {
+          IsActive: IsActive,
+          id: { $toObjectId: id }, // Match the id with req.params.id
+        },
       },
       {
         $lookup: {
-          from: "industryusermasters", // Collection name for IndustryUserMaster
+          from: "industryusermasters",
           localField: "userId",
           foreignField: "_id",
           as: "userDetails",
@@ -69,7 +104,7 @@ exports.listResultDataByParams = async (req, res) => {
       },
       {
         $lookup: {
-          from: "testcatmasters", // Collection name for TestCatMaster
+          from: "testcatmasters",
           localField: "id",
           foreignField: "_id",
           as: "testDetails",
@@ -79,79 +114,83 @@ exports.listResultDataByParams = async (req, res) => {
         $unwind: "$testDetails",
       },
       {
-        $facet: {
-          stage1: [
-            {
-              $group: {
-                _id: null,
-                count: {
-                  $sum: 1,
-                },
-              },
-            },
+        $lookup: {
+          from: "industries",
+          let: {
+            industryCategory: { $toObjectId: "$userDetails.IndustryCategory" },
+          },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$_id", "$$industryCategory"] } } },
           ],
-          stage2: [
-            {
-              $skip: skip,
-            },
-            {
-              $limit: per_page,
-            },
-          ],
+          as: "industryDetails",
         },
       },
       {
         $unwind: {
-          path: "$stage1",
-        },
-      },
-      {
-        $project: {
-          count: "$stage1.count",
-          data: "$stage2",
+          path: "$industryDetails",
+          preserveNullAndEmptyArrays: true,
         },
       },
     ];
 
     if (match) {
-      query = [
-        {
-          $match: {
-            $or: [
-              {
-                Title: { $regex: match, $options: "i" },
-              },
-            ],
-          },
+      query.push({
+        $match: {
+          $or: [
+            { "testDetails.TestName": { $regex: match, $options: "i" } },
+            { "industryDetails.Name": { $regex: match, $options: "i" } },
+          ],
         },
-      ].concat(query);
+      });
     }
 
+    query.push(
+      {
+        $facet: {
+          stage1: [
+            {
+              $group: {
+                _id: null,
+                count: { $sum: 1 },
+              },
+            },
+          ],
+          stage2: [{ $skip: skip }, { $limit: per_page }],
+        },
+      },
+      { $unwind: { path: "$stage1" } },
+      {
+        $project: {
+          count: "$stage1.count",
+          data: "$stage2",
+        },
+      }
+    );
+
+    let sort = {};
     if (sorton && sortdir) {
-      let sort = {};
-      sort[sorton] = sortdir == "desc" ? -1 : 1;
-      query = [
-        {
-          $sort: sort,
-        },
-      ].concat(query);
+      sort[sorton] = sortdir === "desc" ? -1 : 1;
     } else {
-      let sort = {};
       sort["createdAt"] = -1;
-      query = [
-        {
-          $sort: sort,
-        },
-      ].concat(query);
     }
+    query = [{ $sort: sort }].concat(query);
 
     const list = await ResultData.aggregate(query);
 
     res.json(list);
   } catch (error) {
-    res.status(500).send(error);
+    res
+      .status(500)
+      .json({ error: "Internal Server Error", details: error.message });
+      console.log(error);
+      
   }
 };
+
+
+
+
+
 
 
 exports.updateResultDataMaster = async (req, res) => {

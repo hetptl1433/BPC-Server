@@ -11,6 +11,7 @@ const {
   createPointMaster,
   getPointMaster,
   updatePointMaster,
+  getTestPointMaster,
 
  
 } = require("../controllers/PointMasters/PointMasters");
@@ -23,6 +24,7 @@ router.get("/auth/location/PointMaster", catchAsync(listPointMaster));
 router.post("/auth/location/PMParam", catchAsync(listPointMasterByParams));
 router.delete("/auth/location/PointMaster/:_id", catchAsync(removePointMaster));
 router.get("/auth/location/PointMaster/:_id", catchAsync(getPointMaster));
+router.get("/auth/location/test/PointMaster/:testId", catchAsync(getTestPointMaster));
 
 router.post("/auth/location/PointMaster", catchAsync(createPointMaster));
 router.put("/auth/location/PointMaster/:_id", catchAsync(updatePointMaster));

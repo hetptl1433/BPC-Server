@@ -149,6 +149,19 @@ exports.getPointMaster = async (req, res) => {
     res.status(400).send("get PointMaster failed");
   }
 };
+exports.getTestPointMaster = async (req, res) => {
+  try {
+    const state = await PointMaster.find({
+      TestMasterID: req.params.testId,
+    }).populate('PointID').exec();
+    console.log("get PointMaster", state);
+    res.json(state);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("get PointMaster failed");
+  }
+};
+
 
 exports.createPointMaster = async (req, res) => {
   try {

@@ -132,7 +132,19 @@ exports.listCompanyProfileDetailsByParams = async (req, res) => {
         },
       },
     ];
-   
+   if (match) {
+     query = [
+       {
+         $match: {
+           $or: [
+             {
+               CompanyName: { $regex: match, $options: "i" },
+             },
+           ],
+         },
+       },
+     ].concat(query);
+   }
 
     if (sorton && sortdir) {
       let sort = {};

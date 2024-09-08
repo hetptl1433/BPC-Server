@@ -108,7 +108,7 @@ exports.listEmailMasterByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Title: { $regex: match, $options: "i" },
+                MailerName: { $regex: match, $options: "i" },
               },
             ],
           },

@@ -1,19 +1,72 @@
 const ResultAns = require("../../models/ResultAns/ResultAns");
+const PointMaster = require("../../models/PointMaster/PointMaster");
+
+
+const getPointMaster = async (id) => {
+  try {
+    const state = await PointMaster.findOne({
+      _id: id,
+    }).exec();
+    console.log("get PointMaster", state);
+    return(state);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 exports.createResultAns = async (req, res) => {
   try {
-    console.log("Received request body:", req.body);
-    const addResultAns = await new ResultAns(
-      req.body
-    ).save();
-    console.log("create ResultAns", addResultAns);
-    res.status(200).json({ isOk: true, data: addResultAns, message: "" });
+    const resultData = req.body; // Expecting an array of result entries
+    console.log("Received request body:", resultData);
+
+    // Check if resultData is an array and contains entries
+    if (!Array.isArray(resultData) || resultData.length === 0) {
+      return res
+        .status(400)
+        .json({ isOk: false, message: "Invalid input data" });
+    }
+
+    // Loop through each result entry and replace pointMasterId with PointMasterPoints
+    const updatedResultData = await Promise.all(
+      resultData.map(async (entry) => {
+        const pointMaster = await getPointMaster(entry.pointMasterId);
+        if (!pointMaster) {
+          console.warn(`PointMaster not found for id: ${entry.pointMasterId}`);
+          return {
+            ...entry,
+            PointMasterPoints: "0", // Defaulting to 0 if PointMaster is not found
+            pointMasterId: entry.pointMasterId,
+          };
+        }
+
+        // Replace pointMasterId with PointMasterPoints
+        return {
+          ...entry,
+          PointMasterPoints: pointMaster.PointMasterPoints,
+          pointMasterId: entry.pointMasterId,
+        };
+      })
+    );
+
+    // Use insertMany to save all updated results at once
+    const addedResultAns = await ResultAns.insertMany(updatedResultData);
+
+    console.log("ResultAns created:", addedResultAns);
+
+    res.status(200).json({
+      isOk: true,
+      data: addedResultAns,
+      message: "Result saved successfully",
+    });
   } catch (err) {
-    res
-      .status(200)
-      .json({ isOk: false, message: "Error creating ResultAns description" });
+    console.error("Error creating ResultAns:", err.message, err.stack);
+    res.status(500).json({ isOk: false, message: "Error creating ResultAns" });
   }
 };
+
+
+
+
 
 exports.getResultAns = async (req, res) => {
   try {
@@ -27,6 +80,7 @@ exports.getResultAns = async (req, res) => {
 exports.listResultAns = async (req, res) => {
   try {
     const list = await ResultAns.find().sort({ createdAt: 1 }).exec();
+    
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);
@@ -158,7 +212,10 @@ exports.getResultAnsAndData = async (req, res) => {
     const find = await ResultAns.find({
       userId: req.params.userID,
       id: req.params.testID,
-    }).exec();
+    })
+      .populate("pointMasterId") // Populates the PointMaster data
+      .exec();
+
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);

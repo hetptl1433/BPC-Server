@@ -18,6 +18,11 @@ const ResultAnsSchema = new mongoose.Schema(
       ref: "PointMaster",
       required: true,
     },
+    PointMasterPoints:{
+      type:String,
+      required:true
+      },
+    
     Language: {
       type: String,
       required: true,

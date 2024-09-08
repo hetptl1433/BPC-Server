@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const catchAsync = require("../utils/catchAsync");
-const { createResultData, listResultData, listActiveResultData, listResultDataByParams, getResultData, updateResultDataMaster, removeResultDataMaster} = require("../controllers/ResultData/ResultData");
+const { createResultData, listResultData, listActiveResultData, listResultDataByParams, getResultData, updateResultDataMaster, removeResultDataMaster, getResultDataOfUser} = require("../controllers/ResultData/ResultData");
 const multer = require('multer');
 const upload = multer();
 
@@ -16,13 +16,13 @@ router.get(
 );
 
 router.post(
-  "/auth/list-by-params/ResultData",
+  "/auth/list-by-params/ResultData/:id",
   catchAsync(listResultDataByParams)
 );
 
 router.get("/auth/get/ResultData/:_id", catchAsync(getResultData));
 
-
+router.get("/auth/get/ResultData/:id/:userId", catchAsync(getResultDataOfUser));
 
 router.put(
   "/auth/update/ResultData/:_id",upload.none(),
