@@ -1,4 +1,8 @@
 const express = require("express");
+const fs = require("fs");
+const multer = require("multer");
+
+
 
 const router = express.Router();
 
@@ -38,5 +42,29 @@ router.post(
   catchAsync(createTestQuestionMaster)
 );
 router.put("/auth/location/TestQuestionMaster/:_id", catchAsync(updateTestQuestionMaster));
+
+
+
+const multerStorageCK = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/TestQuestionMaster");
+  },
+  filename: (req, file, cb) => {
+    // const ext = file.mimetype.split("/")[1];
+    // cb(null, `${uuidv4()}-${Date.now()}.${ext}`);
+    cb(null, Date.now() + "_" + file.originalname);
+  },
+});
+const uploadCk = multer({ storage: multerStorageCK });
+
+//upload images
+router.post(
+  "/auth/TestQuestionMaster/image-upload",
+  uploadCk.single("uploadImg"),
+  async (req, res) => {
+    console.log(req.file.filename);
+    res.json({ url: req.file.filename });
+  }
+);
 
 module.exports = router;

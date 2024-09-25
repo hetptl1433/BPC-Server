@@ -11,16 +11,17 @@ exports.listDownloadFiles = async (req, res) => {
   }
 };
 exports.listActiveDownloadFiles = async (req, res) => {
- try {
-   const list = await DownloadFiles.find({ IsActive: true })
-     .sort({ createdAt: -1 })
-     .exec();
-   console.log("list Active DownloadFile", list);
-   res.json(list);
- } catch (error) {
-   return res.status(400).send(error);
- }
+  try {
+    const list = await DownloadFiles.find({ IsActive: true })
+      .sort({ SortOrder: 1 }) // 1 for ascending, -1 for descending
+      .exec();
+    console.log("list Active DownloadFile", list);
+    res.json(list);
+  } catch (error) {
+    return res.status(400).send(error);
+  }
 };
+  
 
 exports.createDownloadFiles = async (req, res) => {
   try {

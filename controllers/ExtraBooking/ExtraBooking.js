@@ -22,7 +22,9 @@ exports.getExtraBooking = async (req, res) => {
 
 exports.listExtraBooking = async (req, res) => {
   try {
-    const list = await ExtraBooking.find().sort({ createdAt: -1 }).exec();
+    const list = await ExtraBooking.find({ IsActive: true })
+      .sort({ createdAt: -1 })
+      .exec();
     res.json(list);
   } catch (error) {
     return res.status(400).send(error);

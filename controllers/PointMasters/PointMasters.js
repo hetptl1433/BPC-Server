@@ -50,6 +50,20 @@ exports.listPointMasterByParams = async (req, res) => {
         },
       },
       {
+        $lookup: {
+          from: "points", // Collection name for TestCatMaster
+          localField: "PointID",
+          foreignField: "_id",
+          as: "PointDetails",
+        },
+      },
+      {
+        $unwind: {
+          path: "$PointDetails",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $match: {
           $or: [
             {

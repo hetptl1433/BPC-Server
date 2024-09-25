@@ -4,7 +4,10 @@ const { log } = require("console");
 
 exports.listImgages = async (req, res) => {
   try {
-    const list = await service.find().sort({ sortOrder: 1 }).exec();
+    const list = await service
+      .find({ IsActive: true })
+      .sort({ sortOrder: 1 })
+      .exec();
     res.json(list);
   } catch (error) {
     console.log(error);

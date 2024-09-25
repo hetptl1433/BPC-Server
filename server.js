@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const sql = require("mssql");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
@@ -94,7 +95,27 @@ app.use(async (err, req, res, next) => {
 });
 
 const port = process.env.PORT || 8026;
+const sqlConfig = {
+  user: "bpcindia_unn",
+  password: "d^Je22s1^%$",
+  database: "bpcindia_db",
+  server: "173.212.206.37", // Use just the server name without the port
+  port: 1533, // Specify the port here
+  options: {
+    encrypt: false, // Depending on your setup
+    trustServerCertificate: true, // This might be needed for self-signed certs
+  },
+};
 
+// Connect to SQL Server
+sql
+  .connect(sqlConfig)
+  .then(() => {
+    console.log("Connected to SQL Server");
+  })
+  .catch((err) => {
+    console.log("SQL Connection Error: ", err);
+  });
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });

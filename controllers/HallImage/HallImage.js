@@ -16,15 +16,19 @@ exports.createHalleBoardDetails = async (req, res) => {
       fs.mkdirSync(`${__basedir}/uploads/HalleBoard`);
     }
 
+
     let productImage = req.file
       ? `uploads/HalleBoard/${req.file.filename}`
       : null;
+
+
 
     let {
       category,
       SortOrder,
       IsActive,
     } = req.body;
+    console.log(req.body);
 
     const add = await new HalleBoard({
       category,
@@ -87,7 +91,7 @@ exports.listHalleBoardDetailsByParams = async (req, res) => {
       },
       {
         $lookup: {
-          from: "hallimagemasters",
+          from: "hallbookings",
           localField: "category",
           foreignField: "_id",
           as: "category",
@@ -103,11 +107,9 @@ exports.listHalleBoardDetailsByParams = async (req, res) => {
       {
         $match: {
           $or: [
+           
             {
-              SortOrder: { $regex: match, $options: "i" },
-            },
-            {
-              "category.categoryName": { $regex: match, $options: "i" },
+              "category.Name": { $regex: match, $options: "i" },
             },
           ],
         },

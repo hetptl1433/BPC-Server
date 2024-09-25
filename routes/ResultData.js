@@ -16,7 +16,7 @@ router.get(
 );
 
 router.post(
-  "/auth/list-by-params/ResultData/:id",
+  "/auth/list-by-params/ResultData/:tid",
   catchAsync(listResultDataByParams)
 );
 

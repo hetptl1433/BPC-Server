@@ -71,6 +71,8 @@ exports.listActiveResultData = async (req, res) => {
   }
 };
 
+const mongoose = require("mongoose");
+
 exports.listResultDataByParams = async (req, res) => {
   try {
     let {
@@ -82,13 +84,22 @@ exports.listResultDataByParams = async (req, res) => {
       IsActive,
     } = req.body;
 
-    const { id } = req.params.id; // Extract the id from req.params
+    const { tid } = req.params; // tid will be a string
 
     let query = [
       {
         $match: {
           IsActive: IsActive,
-          id: { $toObjectId: id }, // Match the id with req.params.id
+        },
+      },
+      {
+        $addFields: {
+          idAsString: { $toString: "$id" }, // Convert the ObjectId `id` to a string
+        },
+      },
+      {
+        $match: {
+          idAsString: tid, // Match `id` as string with `tid`
         },
       },
       {
@@ -182,10 +193,9 @@ exports.listResultDataByParams = async (req, res) => {
     res
       .status(500)
       .json({ error: "Internal Server Error", details: error.message });
-      console.log(error);
-      
   }
 };
+
 
 
 

@@ -3,7 +3,9 @@ const fs = require("fs");
 
 exports.listServeFiles = async (req, res) => {
   try {
-    const list = await ServeFiles.find().sort({ createdAt: -1 }).exec();
+    const list = await ServeFiles.find({ IsActive: true })
+      .sort({ createdAt: -1 })
+      .exec();
     res.json(list);
   } catch (error) {
     console.log(error);

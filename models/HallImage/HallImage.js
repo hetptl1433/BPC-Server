@@ -5,7 +5,7 @@ const HalleBoardSchema = new mongoose.Schema(
   {
     category: {
       type: Schema.Types.ObjectId,
-      ref: "HalleCategory",
+      ref: "HallBooking",
       required: true,
     },
     SortOrder: {
@@ -16,14 +16,13 @@ const HalleBoardSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    
+
     IsActive: {
       type: Boolean,
       default: false,
     },
-    
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("HalleBoard", HalleBoardSchema);
+module.exports = mongoose.model("HalleImage", HalleBoardSchema);
