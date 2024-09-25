@@ -16,7 +16,7 @@ const ResultAnsSchema = new mongoose.Schema(
     pointMasterId: {
       type: Schema.Types.ObjectId,
       ref: "PointMaster",
-      required: true,
+      // required: true,
     },
     PointMasterPoints:{
       type:String,

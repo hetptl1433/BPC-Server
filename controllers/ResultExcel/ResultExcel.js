@@ -172,9 +172,15 @@ exports.excelResultData = async (req, res) => {
     for (const item of filteredTestData) {
       const resultanswer = await getResultAnsData(item.userId._id, item.id);
       resultanswer.forEach((answer) => {
-        const pointId = answer.pointMasterId.PointID.toString();
-        if (!pointIdToTitleMap.has(pointId)) {
-          pointIdToTitleMap.set(pointId, answer.pointMasterId.PointMasterTitle);
+        // Check if PointID is defined before proceeding
+        if (answer.pointMasterId && answer.pointMasterId.PointID) {
+          const pointId = answer.pointMasterId.PointID.toString();
+          if (!pointIdToTitleMap.has(pointId)) {
+            pointIdToTitleMap.set(
+              pointId,
+              answer.pointMasterId.PointMasterTitle
+            );
+          }
         }
       });
     }
@@ -222,10 +228,13 @@ exports.excelResultData = async (req, res) => {
 
       // Accumulate points in the appropriate category based on PointID
       resultanswer.forEach((answer) => {
-        const pointId = answer.pointMasterId.PointID.toString();
-        if (pointIdTotals[pointId] !== undefined) {
-          pointIdTotals[pointId] +=
-            parseFloat(answer.pointMasterId.PointMasterPoints) || 0;
+        // Only process answers where PointID is defined
+        if (answer.pointMasterId && answer.pointMasterId.PointID) {
+          const pointId = answer.pointMasterId.PointID.toString();
+          if (pointIdTotals[pointId] !== undefined) {
+            pointIdTotals[pointId] +=
+              parseFloat(answer.pointMasterId.PointMasterPoints) || 0;
+          }
         }
       });
 
@@ -271,3 +280,4 @@ exports.excelResultData = async (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 };
+
