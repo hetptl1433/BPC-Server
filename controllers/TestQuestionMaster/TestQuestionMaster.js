@@ -62,10 +62,17 @@ exports.listTestQuestionMasterByParams = async (req, res) => {
     ];
 
     if (match) {
-      const regex = new RegExp(match, "i");
       query.push({
         $match: {
-          $or: [{ AnsType: regex }],
+          $or: [
+            {
+              "TestCategoryDetails.categoryName": {
+                $regex: match,
+                $options: "i",
+              },
+            },
+            { "TestMasterDetails.TestName": { $regex: match, $options: "i" } },
+          ],
         },
       });
     }

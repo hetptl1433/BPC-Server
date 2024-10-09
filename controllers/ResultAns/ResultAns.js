@@ -26,25 +26,37 @@ exports.createResultAns = async (req, res) => {
         .json({ isOk: false, message: "Invalid input data" });
     }
 
-    // Loop through each result entry and replace pointMasterId with PointMasterPoints
+    // Loop through each result entry and handle pointMasterId
     const updatedResultData = await Promise.all(
       resultData.map(async (entry) => {
-        const pointMaster = await getPointMaster(entry.pointMasterId);
-        if (!pointMaster) {
-          console.warn(`PointMaster not found for id: ${entry.pointMasterId}`);
+        // Validate entry structure
+        if (!entry.pointMasterId) {
+          console.warn("Missing pointMasterId in entry:", entry);
           return {
             ...entry,
-            PointMasterPoints: "0", // Defaulting to 0 if PointMaster is not found
-            pointMasterId: entry.pointMasterId,
+            PointMasterPoints: "0", // Default value
           };
         }
 
-        // Replace pointMasterId with PointMasterPoints
-        return {
-          ...entry,
-          PointMasterPoints: pointMaster.PointMasterPoints,
-          pointMasterId: entry.pointMasterId,
-        };
+        try {
+          // Fetch PointMaster data
+          const pointMaster = await getPointMaster(entry.pointMasterId);
+          return {
+            ...entry,
+            PointMasterPoints: pointMaster
+              ? pointMaster.PointMasterPoints
+              : "0",
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching PointMaster for id ${entry.pointMasterId}:`,
+            error
+          );
+          return {
+            ...entry,
+            PointMasterPoints: "0", // Default value in case of error
+          };
+        }
       })
     );
 
@@ -63,6 +75,7 @@ exports.createResultAns = async (req, res) => {
     res.status(500).json({ isOk: false, message: "Error creating ResultAns" });
   }
 };
+
 
 
 
@@ -208,6 +221,7 @@ exports.removeResultAnsMaster = async (req, res) => {
 
 
 exports.getResultAnsAndData = async (req, res) => {
+  
   try {
     const find = await ResultAns.find({
       userId: req.params.userID,
@@ -215,7 +229,7 @@ exports.getResultAnsAndData = async (req, res) => {
     })
       .populate("pointMasterId") // Populates the PointMaster data
       .exec();
-
+    console.log("yeveto", find);
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);

@@ -46,12 +46,36 @@ exports.createHalleBoardDetails = async (req, res) => {
 exports.listHalleBoardDetails = async (req, res) => {
   try {
     console.log("Fetching HalleBoard details...");
-    const list = await HalleBoard.find().sort({ SortOrder: 1 }).exec();
+    const list = await HalleBoard.find({IsActive: true}).sort({ SortOrder: 1 }).exec();
     if (!list || list.length === 0) {
       console.log("No HalleBoard details found.");
       return res.status(404).json({ message: "No data found" });
     }
-    console.log("HalleBoard details fetched successfully:", list);
+    
+    res.json(list);
+  } catch (error) {
+    console.error("Error listing HalleBoard details:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.listHalleBoardByIdDetails = async (req, res) => {
+  
+  try {
+    console.log("Fetching HalleBoard details...");
+    const list = await HalleBoard.find({
+      IsActive: true,
+      category: req.params.id,
+    })
+      .sort({ SortOrder: 1 })
+      .exec();
+    if (!list || list.length === 0) {
+      console.log("No HalleBoard details found.");
+      return res.status(404).json({ message: "No data found" });
+    }
+
     res.json(list);
   } catch (error) {
     console.error("Error listing HalleBoard details:", error);

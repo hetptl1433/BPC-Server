@@ -1,4 +1,4 @@
-const ExcelJS = require('exceljs');
+  const ExcelJS = require('exceljs');
 const ResultData = require("../../models/ResultData/ResultData");
 const ResultAns = require("../../models/ResultAns/ResultAns");
 
@@ -8,7 +8,7 @@ const getResultAnsData = async (userID, testID) => {
       userId: userID,
       id: testID,
     }).populate("pointMasterId").exec();
-console.log(find);
+
     return (find);
   } catch (error) {
     console.log("error in finding result ans", error);
@@ -133,25 +133,14 @@ exports.listResultAnsByParams = async (req, res) => {
 
 exports.excelResultData = async (req, res) => {
   try {
-    console.log("API request received");
-
     const { industry, testCategory, startDate, endDate } = req.body;
-    console.log("Start Date:", startDate, "End Date:", endDate);
 
     // Parse startDate and endDate to JavaScript Date objects
     const parsedStartDate = new Date(`${startDate}T00:00:00Z`);
     const parsedEndDate = new Date(`${endDate}T23:59:59Z`); // End of the day
 
-    console.log(
-      "Parsed Start Date:",
-      parsedStartDate,
-      "Parsed End Date:",
-      parsedEndDate
-    );
-
     // Fetch TestData from your database based on industry
     const TestData = await getResultDataByIndustry(industry);
-    console.log("Test Data:", TestData);
 
     // Filter TestData based on the ExamDate being between startDate and endDate
     const filteredTestData = TestData.filter((item) => {
@@ -159,7 +148,17 @@ exports.excelResultData = async (req, res) => {
       return examDate >= parsedStartDate && examDate <= parsedEndDate;
     });
 
-    console.log("Filtered Test Data:", filteredTestData);
+    // Assuming testCategory is a single object with an _id field
+
+    // Assuming testCategory has a field 'industry' and filteredTestData has 'IndustryCategory' inside 'userId'
+    const matchedData = filteredTestData.filter(
+      (testData) =>
+        testData.id.toString() ===
+        req.body.testCategory.toString()
+    );
+    // Now, matchedData will contain entries from filteredTestData where the userId.IndustryCategory matches testCategory.industry
+
+    // Now, matchedData will contain entries from filteredTestData where the id matches testCategory._id
 
     // Create a new workbook and a worksheet
     const workbook = new ExcelJS.Workbook();
@@ -169,7 +168,7 @@ exports.excelResultData = async (req, res) => {
     const pointIdToTitleMap = new Map();
 
     // First pass: collect all unique PointIDs and their corresponding title from the first occurrence
-    for (const item of filteredTestData) {
+    for (const item of matchedData) {
       const resultanswer = await getResultAnsData(item.userId._id, item.id);
       resultanswer.forEach((answer) => {
         // Check if PointID is defined before proceeding
@@ -210,11 +209,8 @@ exports.excelResultData = async (req, res) => {
     // Set columns for the worksheet
     worksheet.columns = [...baseColumns, ...pointIdColumns, totalColumn];
 
-    console.log("Header row added with dynamic PointID titles");
-
     // Second pass: process each user's data and populate the rows
-    for (const item of filteredTestData) {
-      console.log(`Processing user: ${item.userId.Name}`);
+    for (const item of matchedData) {
 
       const resultanswer = await getResultAnsData(item.userId._id, item.id);
 
@@ -271,10 +267,10 @@ exports.excelResultData = async (req, res) => {
     res.setHeader("Content-Length", buffer.length);
 
     console.log("Response headers set");
+    res.setHeader("Processing-Status", "Completed");
 
     // Send the buffer as the response
     res.end(buffer);
-    console.log("Response sent");
   } catch (err) {
     console.error("Error generating Excel:", err);
     return res.status(500).send("Internal Server Error");

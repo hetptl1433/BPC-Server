@@ -91,7 +91,7 @@ exports.listContentContactByParams = async (req, res) => {
           $match: {
             $or: [
               {
-                Title: { $regex: match, $options: "i" },
+                Name: { $regex: match, $options: "i" },
               },
             ],
           },
