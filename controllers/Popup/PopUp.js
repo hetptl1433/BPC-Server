@@ -155,21 +155,23 @@ exports.getPopUpFile = async (req, res) => {
 
 exports.updatePopUpFile = async (req, res) => {
   try {
-    let PopUpFile = req.file
+    let PopUpFiles = req.file
       ? `uploads/PopUpFile/${req.file.filename}`
       : null;
     let fieldvalues = { ...req.body };
-    if (PopUpFile != null) {
-      fieldvalues.PopUpFile = PopUpFile;
+    if (PopUpFiles != null) {
+      fieldvalues.PopUpFile = PopUpFiles;
     }
-    const update = await PopUpFile.findOneAndUpdate(
-      { _id: req.params._id },
-      fieldvalues,
 
-      { new: true }
-    );
+const update = await PopUpFile.findByIdAndUpdate(
+  req.params._id, // Pass the ID directly
+  fieldvalues,
+  { new: true } // Options object to return the modified document
+);
+
     res.json(update);
   } catch (err) {
+    console.log(err);
     res.status(500).send(err);
   }
 };

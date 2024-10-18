@@ -23,6 +23,7 @@ exports.createRAS = async (req, res) => {
       Problem,
       Additionalresponsibility,
       Information,
+      language,
       IsActive,
     } = req.body;
     const addRAS = await new RAS({
@@ -45,6 +46,7 @@ exports.createRAS = async (req, res) => {
       Problem,
       Additionalresponsibility,
       Information,
+      language,
       IsActive,
     }).save();
     res.status(200).json({ isOk: true, data: addRAS, message: "" });

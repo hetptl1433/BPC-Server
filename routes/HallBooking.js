@@ -5,7 +5,7 @@ const router = express.Router();
 const catchAsync = require("../utils/catchAsync");
 
 const multer = require("multer");
-const { createHallBook, listHallBook, listHallBookByParams, getHallBook, updateHallBook, removeHallBook } = require("../controllers/HallBooking/HallBooking");
+const { createHallBook, listHallBook, listHallBookByParams, getHallBook, updateHallBook, removeHallBook, getHallBookByTitle } = require("../controllers/HallBooking/HallBooking");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -34,6 +34,8 @@ router.post(
 );
 
 router.get("/auth/get/HallBook/:_id", catchAsync(getHallBook));
+router.get("/auth/get/HallBookTitle/:title", catchAsync(getHallBookByTitle));
+
 
 router.put(
   "/auth/update/HallBook/:_id",
@@ -45,5 +47,7 @@ router.delete(
   "/auth/remove/HallBook/:_id",
   catchAsync(removeHallBook)
 );
+
+
 
 module.exports = router;

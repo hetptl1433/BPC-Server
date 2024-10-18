@@ -1,6 +1,6 @@
 const ResultAns = require("../../models/ResultAns/ResultAns");
 const PointMaster = require("../../models/PointMaster/PointMaster");
-
+const mongoose = require("mongoose");
 
 const getPointMaster = async (id) => {
   try {
@@ -29,38 +29,42 @@ exports.createResultAns = async (req, res) => {
     // Loop through each result entry and handle pointMasterId
     const updatedResultData = await Promise.all(
       resultData.map(async (entry) => {
-        // Validate entry structure
-        if (!entry.pointMasterId) {
-          console.warn("Missing pointMasterId in entry:", entry);
+        // If pointMasterId is missing or invalid, set PointMasterPoints to "0"
+        if (
+          !entry.pointMasterId ||
+          !mongoose.Types.ObjectId.isValid(entry.pointMasterId)
+        ) {
+          console.warn("Missing or invalid pointMasterId in entry:", entry);
           return {
             ...entry,
-            PointMasterPoints: "0", // Default value
+            PointMasterPoints: "0", // Default value when pointMasterId is invalid/missing
           };
         }
 
         try {
-          // Fetch PointMaster data
+          // Attempt to fetch PointMaster data
           const pointMaster = await getPointMaster(entry.pointMasterId);
           return {
             ...entry,
             PointMasterPoints: pointMaster
               ? pointMaster.PointMasterPoints
-              : "0",
+              : "0", // Default if no PointMaster data found
           };
         } catch (error) {
+          // Log error and proceed with PointMasterPoints set to "0"
           console.error(
             `Error fetching PointMaster for id ${entry.pointMasterId}:`,
-            error
+            error.message
           );
           return {
             ...entry,
-            PointMasterPoints: "0", // Default value in case of error
+            PointMasterPoints: "0", // Default in case of any fetch error
           };
         }
       })
     );
 
-    // Use insertMany to save all updated results at once
+    // Use insertMany to save all updated results, even if some entries had issues
     const addedResultAns = await ResultAns.insertMany(updatedResultData);
 
     console.log("ResultAns created:", addedResultAns);
@@ -68,7 +72,8 @@ exports.createResultAns = async (req, res) => {
     res.status(200).json({
       isOk: true,
       data: addedResultAns,
-      message: "Result saved successfully",
+      message:
+        "Result saved successfully, with default points for some entries",
     });
   } catch (err) {
     console.error("Error creating ResultAns:", err.message, err.stack);

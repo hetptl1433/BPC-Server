@@ -23,14 +23,23 @@ exports.createCoursesFun = async (req, res) => {
 
 exports.getCoursesFun = async (req, res) => {
   try {
-    console.log("is here");
 
-    console.log("wwww",req.params._id);
     const find = await CoursesFun.findOne({ _id: req.params._id }).exec();
     res.json(find);
   } catch (error) {
     return res.status(500).send(error);
     
+  }
+};
+
+exports.getCoursesFunByName = async (req, res) => {
+  try {
+
+    console.log("wwww", req.params.Name);
+    const find = await CoursesFun.findOne({ Name: req.params.Name }).exec();
+    res.json(find);
+  } catch (error) {
+    return res.status(500).send(error);
   }
 };
 
@@ -104,6 +113,12 @@ exports.listCoursesFunByParams = async (req, res) => {
             $or: [
               {
                 Name: { $regex: match, $options: "i" },
+              },
+              {
+                Fees: { $regex: match, $options: "i" },
+              },
+              {
+                Duration: { $regex: match, $options: "i" },
               },
             ],
           },

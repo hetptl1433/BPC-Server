@@ -22,6 +22,9 @@ const RASSchema = new mongoose.Schema(
     Department: {
       type: String,
     },
+    language: {
+      type: String,
+    },
     Section: {
       type: String,
     },
@@ -38,40 +41,31 @@ const RASSchema = new mongoose.Schema(
     },
     DOB: {
       type: String,
-      
     },
     DateofJoining: {
       type: String,
-      
     },
     PreviousExperience: {
       type: String,
-      
     },
     Educational: {
       type: String,
-      
     },
     Achievement: {
       type: String,
-      
     },
     Areaofinterest: {
       type: String,
-      
     },
     Problem: {
       type: String,
-      
     },
     Additionalresponsibility: {
       type: String,
-      
     },
 
     Information: {
       type: String,
-      
     },
     IsActive: {
       type: Boolean,

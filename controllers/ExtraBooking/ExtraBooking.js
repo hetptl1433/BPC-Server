@@ -86,19 +86,28 @@ exports.listExtraBookingByParams = async (req, res) => {
         },
       },
     ];
-    if (match) {
-      query = [
-        {
-          $match: {
-            $or: [
-              {
-                Name: { $regex: match, $options: "i" },
-              },
-            ],
-          },
+  if (match) {
+    query = [
+      {
+        $addFields: {
+          priceStr: { $toString: "$Price" }, // Convert Price to string
         },
-      ].concat(query);
-    }
+      },
+      {
+        $match: {
+          $or: [
+            {
+              Name: { $regex: match, $options: "i" }, // Regex for Name
+            },
+            {
+              priceStr: { $regex: match, $options: "i" }, // Regex for converted Price string
+            },
+          ],
+        },
+      },
+    ].concat(query);
+  }
+
 
     if (sorton && sortdir) {
       let sort = {};

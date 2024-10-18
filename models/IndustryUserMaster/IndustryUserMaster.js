@@ -28,7 +28,7 @@ const IndustryUserMasterSchema = new mongoose.Schema(
     },
     landLine: {
       type: String,
-      required: true,
+      // required: true,
     },
     UserName:{
       type:String,
@@ -40,7 +40,7 @@ const IndustryUserMasterSchema = new mongoose.Schema(
     },
     Address:{
       type:String,
-      required: true,
+      // required: true,
       },
 
     IsActive: {
